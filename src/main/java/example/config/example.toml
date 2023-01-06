@@ -1,0 +1,14 @@
+a_string = "String"
+
+a_multiline_string = """
+A
+ multiline \
+string"""
+# Should be "A multiline string"
+
+a_literal_string = 'Literal string'
+
+[cat]
+a_boolean = true
+a_nan = -nan
+an_infinity = +inf
