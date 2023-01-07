@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation include('com.github.KrLite:Pierced:xxx')
+    implementation 'com.github.KrLite:Pierced:xxx'
     // Replace xxx with the latest tag name
 }
 ```
