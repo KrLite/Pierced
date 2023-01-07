@@ -1,5 +1,6 @@
 package example;
 
+import net.krlite.pierced.annotation.Category;
 import net.krlite.pierced.annotation.Comment;
 import net.krlite.pierced.config.Pierced;
 import net.krlite.pierced.core.EnumLocalizable;
@@ -12,6 +13,9 @@ public class Config extends Pierced {
 		super(Config.class, file);
 	}
 
+	@Category("enum")
+	@Comment("GHI")
+	@Comment("DEF")
 	public ExEnum exEnum = ExEnum.A;
 
 	enum ExEnum implements EnumLocalizable {
