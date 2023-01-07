@@ -13,11 +13,11 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class Pierced<S> {
-	protected @Silent Class<S> clazz;
+public abstract class Pierced {
+	protected @Silent Class<?> clazz;
 	protected @Silent File file;
 
-	public Pierced(Class<S> clazz, File file) {
+	public Pierced(Class<?> clazz, File file) {
 		this.clazz = clazz;
 		this.file = file;
 	}

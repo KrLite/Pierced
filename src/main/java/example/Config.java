@@ -7,7 +7,7 @@ import net.krlite.pierced.core.EnumLocalizable;
 import java.io.File;
 
 @Comment("ABC")
-public class Config extends Pierced<Config> {
+public class Config extends Pierced {
 	public Config(File file) {
 		super(Config.class, file);
 	}
