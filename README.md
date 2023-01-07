@@ -1,10 +1,11 @@
 ### <p align=right>[`→` JitPack](https://jitpack.io/#KrLite/Pierced)</p>
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/artwork/banner-bright.png?raw=true" />
-    <img align=right height=87 src="/artwork/banner-dim.png?raw=true" />
+    	<source media="(prefers-color-scheme: dark)" srcset="/artwork/banner-dim.png?raw=true" />
+    	<img src="/artwork/banner-bright.png?raw=true" />
 </picture>
 
+<br />
 <br />
 
 **Pierced** is a lightweight library for java which handles extremely simple [`TOML`](https://toml.io) configuration files.
@@ -19,14 +20,14 @@ repositories {
 }
 
 dependencies {
-    implementation include('com.github.KrLite:Pierced:xxx')
+    implementation 'com.github.KrLite:Pierced:xxx'
     // Replace xxx with the latest tag name
 }
 ```
 
 ## Intro
 
-**Pierced is only 20KB.** You can bring **Pierced** anywhere you want.
+**Pierced is only 16KB.** You can bring **Pierced** anywhere you want.
 
 The sacrifice of such a small size is that **Pierced** is not a full-featured `TOML` parser. It only supports the most basic features of `TOML,` and it is not recommended to use it for complex configuration files. But for those who want a fast, simple one, **Pierced** is of no doubt a good choice.
 
@@ -73,15 +74,15 @@ config.save();
 
 **Pierced** supports most of the `TOML` features:
 
-- Basic strings and literal strings[^literal strings]
+- Basic strings and literal strings[^literal_strings]
+- Multiline basic strings and literal strings[^literal_strings]
 
-[literal strings]: Literal strings can be read, but they will be seen the same as basic strings for now. All the strings are saved as literal strings in case of complex escaping.
+[^literal_strings]: Literal strings can be read, but they will be seen the same as basic strings for now. All the strings are saved as literal strings in case of complex escaping.
 
-- Multiline basic strings and literal strings[^literal strings]
 - Boolean values
-- Integer(bin, oct, dec and hex) values and float values with underscores[^scientific notation]
+- Integer(bin, oct, dec and hex) values and float values with underscores[^scientific_notation]
 
-[scientific notation]: Scientific notation is not supported yet.
+[^scientific_notation]: Scientific notation is not supported yet.
 
 - (±)nan and (±)infinity
 - Full-line comments and inline comments
