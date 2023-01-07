@@ -11,6 +11,8 @@
 
 ## TL;DR
 
+After implementation, you should extend the `Pierced` class and add your own config fields.
+
 ```groovy
 repositories {
     maven { url 'https://jitpack.io' }
@@ -18,10 +20,9 @@ repositories {
 
 dependencies {
     implementation include('com.github.KrLite:Pierced:xxx')
+    // Replace xxx with the latest tag name
 }
 ```
-
-> Please replace `xxx` above with the latest tag name.
 
 ## Intro
 
@@ -31,22 +32,122 @@ The sacrifice of such a small size is that **Pierced** is not a full-featured `T
 
 ## Usage
 
-`1` Create your config class that extends `Pierced.class:`
+### `1` Create your config class that extends `Pierced.class:`
 
 ```java
 public class Config extends Pierced<Config> {
-    public String name;
-    public int age;
-    public boolean isMale;
-    public String[] hobbies;
-    public List<String> friends;
-    public Map<String, Integer> scores;
-	
-	
+	public String name;
+	public int age;
+	public boolean isMale;
+	public String[] hobbies;
+	public List<String> friends;
+	public Map<String, Integer> scores;
+
+	public Config(File file) {
+		super(Config.class, file); // Config.class should be the same as this class
+	}
 }
 ```
 
-`2` Create a `Config` instance and load the config file:
+### `2` Create a `Config` instance and load the config file:
 
 ```java
+Config config = new Config(new File("config.toml"));
 ```
+
+```java
+config.load();
+```
+
+### `3` Use and save the config:
+
+```java
+System.out.println(config.name);
+config.age = 18;
+```
+```java
+config.save();
+```
+
+## Compatibility
+
+**Pierced** supports most of the `TOML` features:
+
+- Basic strings and literal strings[^literal strings]
+
+[literal strings]: Literal strings can be read, but they will be seen the same as basic strings for now. All the strings are saved as literal strings in case of complex escaping.
+
+- Multiline basic strings and literal strings[^literal strings]
+- Boolean values
+- Integer(bin, oct, dec and hex) values and float values with underscores[^scientific notation]
+
+[scientific notation]: Scientific notation is not supported yet.
+
+- (±)nan and (±)infinity
+- Full-line comments and inline comments
+- Tables(as categories)
+
+**What Pierced does not support for now:**
+
+- Dates and times
+- Array values
+
+## Annotations
+
+**Pierced** supports annotations to customize the behavior of the options.
+
+### `@Comment` to comment:
+
+```java
+@Comment("THIS CONFIGURATION FILE IS FOR DEMO")
+@Comment("DO NOT USE IN PRODUCTION")
+public class Config extends Pierced<Config> {
+	public Config(File file) {
+		super(Config.class, file);
+	}
+	
+    @Comment("The name of the user")
+    public String name = "Username";
+}
+```
+
+And it will be:
+
+```toml
+# THIS CONFIGURATION FILE IS FOR DEMO
+# DO NOT USE IN PRODUCTION
+
+name = 'Username'
+# The name of the user
+```
+
+### `@Category` to categorize fields:
+
+```java
+@Category("user")
+public String name = "Username"; // Categorized
+
+public int people = 100; // Uncategorized
+```
+
+And it will be:
+
+```toml
+people = 100
+
+[user]
+name = 'Username'
+```
+
+### `@Silent` to hide fields from saving and loading:
+
+```java
+public String name = "Username"; // Visible
+public @Silent int age = 18; // Invisible
+```
+
+Only the fields not annotated by `@Silent` will be saved and loaded.
+
+## License
+
+**Pierced** is available under **[GNU Public License.](LICENSE)**
