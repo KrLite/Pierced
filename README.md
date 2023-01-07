@@ -27,7 +27,7 @@ dependencies {
 
 ## Intro
 
-**Pierced is only 20KB.** You can bring **Pierced** anywhere you want.
+**Pierced is only 16KB.** You can bring **Pierced** anywhere you want.
 
 The sacrifice of such a small size is that **Pierced** is not a full-featured `TOML` parser. It only supports the most basic features of `TOML,` and it is not recommended to use it for complex configuration files. But for those who want a fast, simple one, **Pierced** is of no doubt a good choice.
 
