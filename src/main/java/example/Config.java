@@ -15,6 +15,7 @@ public class Config extends Pierced {
 
 	@Category("enum")
 	@Comment("GHI")
+	@Comment
 	@Comment("DEF")
 	public ExEnum exEnum = ExEnum.A;
 

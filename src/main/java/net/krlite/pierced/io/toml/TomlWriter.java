@@ -107,7 +107,7 @@ public class TomlWriter {
 		boolean isComment = TomlRegex.COMMENT.matcher(line).matches();
 		if (ready) {
 			writer.write("\n");
-			if ((separate && !isComment) || TomlRegex.CATEGORY.matcher(line).matches())
+			if ((separate && !isComment && !line.isEmpty()) || TomlRegex.CATEGORY.matcher(line).matches())
 				writer.write("\n");
 		} else ready = true;
 		separate = isComment;
