@@ -1,6 +1,6 @@
 a_string = "String"
 
-a_multiline_string = """
+a_multiline_string = """abc
 A
  multiline \
 string"""
