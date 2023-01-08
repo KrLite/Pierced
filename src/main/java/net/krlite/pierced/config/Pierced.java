@@ -1,6 +1,6 @@
 package net.krlite.pierced.config;
 
-import net.krlite.pierced.annotation.Category;
+import net.krlite.pierced.annotation.Table;
 import net.krlite.pierced.annotation.Comment;
 import net.krlite.pierced.annotation.Comments;
 import net.krlite.pierced.annotation.Silent;
@@ -9,12 +9,14 @@ import net.krlite.pierced.io.toml.TomlWriter;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public abstract class Pierced {
 	protected @Silent Class<?> clazz;
 	protected @Silent File file;
+	private final @Silent ArrayList<Exception> exceptions = new ArrayList<>();
 
 	public Pierced(Class<?> clazz, File file) {
 		this.clazz = clazz;
@@ -27,11 +29,11 @@ public abstract class Pierced {
 		Arrays.stream(fields).filter(Pierced::isValid)
 				.forEach(field -> {
 					String key = field.getName();
-					if (field.isAnnotationPresent(Category.class))
-						key = field.getAnnotation(Category.class).value() + "." + key;
+					if (field.isAnnotationPresent(Table.class))
+						key = field.getAnnotation(Table.class).value() + "." + key;
 					if (reader.content.containsKey(key))
 						reader.load(field, reader.content.get(key), field.getType(), this);
-					else new Exception("Key " + key + " not found in " + file.getName()).printStackTrace();
+					else exceptions.add(new Exception("Key '" + key + "' not found in " + file.getName()));
 				});
 	}
 
@@ -49,11 +51,19 @@ public abstract class Pierced {
 				.forEach(field -> saveField(writer, field));
 		// Categorized fields
 		Arrays.stream(fields).filter(Pierced::isCategorized)
-				.collect(Collectors.groupingBy(f -> f.getAnnotation(Category.class)))
-				.forEach((category, fieldList) -> {
-					writer.category(category);
+				.collect(Collectors.groupingBy(f -> f.getAnnotation(Table.class)))
+				.forEach((table, fieldList) -> {
+					writer.table(table);
 					fieldList.forEach(field -> saveField(writer, field));
 				});
+	}
+
+	public ArrayList<Exception> getExceptions() {
+		return exceptions;
+	}
+
+	public void printExceptions() {
+		exceptions.forEach(Exception::printStackTrace);
 	}
 
 	private void saveField(TomlWriter writer, Field field) {
@@ -66,7 +76,7 @@ public abstract class Pierced {
 			else if (field.isAnnotationPresent(Comments.class))
 				writer.comment(field.getAnnotation(Comments.class).value());
 		} catch (IllegalAccessException illegalAccessException) {
-			illegalAccessException.printStackTrace();
+			exceptions.add(illegalAccessException);
 		}
 	}
 
@@ -75,6 +85,6 @@ public abstract class Pierced {
 	}
 
 	private static boolean isCategorized(Field field) {
-		return field.isAnnotationPresent(Category.class);
+		return field.isAnnotationPresent(Table.class);
 	}
 }

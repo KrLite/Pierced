@@ -1,6 +1,6 @@
 package example;
 
-import net.krlite.pierced.annotation.Category;
+import net.krlite.pierced.annotation.Table;
 import net.krlite.pierced.annotation.Comment;
 import net.krlite.pierced.config.Pierced;
 import net.krlite.pierced.core.EnumLocalizable;
@@ -13,7 +13,7 @@ public class Config extends Pierced {
 		super(Config.class, file);
 	}
 
-	@Category("enum")
+	@Table("enum")
 	@Comment("GHI")
 	@Comment
 	@Comment("DEF")

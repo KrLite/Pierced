@@ -3,6 +3,7 @@ package net.krlite.pierced.io.toml;
 import net.krlite.pierced.core.Convertable;
 import net.krlite.pierced.core.EnumLocalizable;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -37,40 +38,25 @@ public class TomlReader {
 		if (clazz == null || value == null) return;
 		field.setAccessible(true);
 		try {
-			if (clazz == Boolean.class || clazz == boolean.class) {
+			if (clazz == Boolean.class || clazz == boolean.class)
 				field.set(instance, Boolean.parseBoolean(value.toString()));
-			} else if (Convertable.class.isAssignableFrom(clazz)) {
+			else if (Convertable.class.isAssignableFrom(clazz))
 				field.set(instance, ((Convertable<?>) value).convertFromString(value.toString()));
-			} else if (field.get(instance) instanceof Number) {
+			else if (field.get(instance) instanceof Number) {
 				String compiled = value.toString().replaceAll("_", "");
-				if (clazz == Byte.class || clazz == byte.class) {
+				if (clazz == Byte.class || clazz == byte.class)
 					field.set(instance, Byte.parseByte(compiled));
-				} else if (clazz == Short.class || clazz == short.class) {
-					field.set(instance, Short.parseShort(compiled));
-				} else if (clazz == Integer.class || clazz == int.class) {
-					if (compiled.startsWith("0x"))
-						field.set(instance, Integer.parseInt(compiled.substring(2), 16));
-					else if (compiled.startsWith("0o"))
-						field.set(instance, Integer.parseInt(compiled.substring(2), 8));
-					else if (compiled.startsWith("0b"))
-						field.set(instance, Integer.parseInt(compiled.substring(2), 2));
-					else
-						field.set(instance, Integer.parseInt(compiled));
-				} else if (clazz == Long.class || clazz == long.class) {
-					if (compiled.startsWith("0x"))
-						field.set(instance, Long.parseLong(compiled.substring(2), 16));
-					else if (compiled.startsWith("0o"))
-						field.set(instance, Long.parseLong(compiled.substring(2), 8));
-					else if (compiled.startsWith("0b"))
-						field.set(instance, Long.parseLong(compiled.substring(2), 2));
-					else
-						field.set(instance, Long.parseLong(compiled));
-				} else if (clazz == Float.class || clazz == float.class) {
+				else if (clazz == Short.class || clazz == short.class)
+					field.set(instance, Short.decode(compiled));
+				else if (clazz == Integer.class || clazz == int.class)
+					field.set(instance, Integer.decode(compiled));
+				else if (clazz == Long.class || clazz == long.class)
+					field.set(instance, Long.decode(compiled));
+				else if (clazz == Float.class || clazz == float.class)
 					field.set(instance, Float.parseFloat(compiled));
-				} else if (clazz == Double.class || clazz == double.class) {
+				else if (clazz == Double.class || clazz == double.class)
 					field.set(instance, Double.parseDouble(compiled));
-				}
-			} else if (clazz.isEnum()) {
+			} else if (clazz.isEnum())
 				Arrays.stream(clazz.getEnumConstants())
 						.filter(e -> EnumLocalizable.class.isAssignableFrom(clazz) ?
 											 ((EnumLocalizable) e).getLocalizedName().equals(value.toString()) : ((Enum<?>) e).name().equals(value.toString()))
@@ -81,7 +67,9 @@ public class TomlReader {
 								exceptions.add(illegalAccessException);
 							}
 						});
-			} else exceptions.add(new IllegalArgumentException("Unsupported type " + clazz.getName()));
+			else if (clazz == Color.class)
+				field.set(instance, Color.decode(value.toString()));
+			else exceptions.add(new IllegalArgumentException("Unsupported type " + clazz.getName()));
 		} catch (IllegalAccessException illegalAccessException) {
 			exceptions.add(illegalAccessException);
 		}

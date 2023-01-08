@@ -1,10 +1,11 @@
 package net.krlite.pierced.io.toml;
 
-import net.krlite.pierced.annotation.Category;
+import net.krlite.pierced.annotation.Table;
 import net.krlite.pierced.annotation.Comment;
 import net.krlite.pierced.core.Convertable;
 import net.krlite.pierced.core.EnumLocalizable;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class TomlWriter {
 	private final File file;
-	private final ArrayList<Exception> exceptions = new ArrayList<>();
+	public final ArrayList<Exception> exceptions = new ArrayList<>();
 
 	public TomlWriter(File file) {
 		this.file = file;
@@ -50,20 +51,21 @@ public class TomlWriter {
 		} else if (clazz.isEnum())
 			write(key, quote(EnumLocalizable.class.isAssignableFrom(clazz) ?
 									 ((EnumLocalizable) value).getLocalizedName() : ((Enum<?>) value).name()));
+		else if (clazz == Color.class)
+			write(key, quote(Integer.toHexString(((Color) value).getRGB())));
 		else if (clazz == String.class) {
 			String compiled = value.toString();
-			if (Pattern.compile("\n").matcher(compiled).find()) {
+			if (Pattern.compile("\n").matcher(compiled).find())
 				write(key, "'''\n" + compiled + "'''");
-			} else {
+			else
 				write(key, quote(compiled));
-			}
 		} else write(key, quote(value.toString()));
 	}
 
-	public void category(Category category) {
+	public void table(Table table) {
 		try {
-			if (!category.value().isEmpty())
-				write("[" + category.value() + "]");
+			if (!table.value().isEmpty())
+				write("[" + table.value() + "]");
 		} catch (IOException ioException) {
 			exceptions.add(ioException);
 		}
