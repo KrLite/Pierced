@@ -88,7 +88,7 @@ config.save();
 
 - (±)nan and (±)infinity
 - Full-line comments and inline comments
-- Tables(as categories)
+- Tables(as dotted keys)
 
 **What Pierced does not support for now:**
 
