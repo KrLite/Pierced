@@ -27,7 +27,9 @@ dependencies {
 
 ## Intro
 
-**Pierced is only 16KB.** You can bring **Pierced** anywhere you want.
+**Pierced is only 16KB.[^size]** You can bring **Pierced** anywhere you want.
+
+[^size]: The compiled jar of **Pierced** is currently 16KB, and the sources jar is only 8KB.
 
 The sacrifice of such a small size is that **Pierced** is not a full-featured `TOML` parser. It only supports the most basic features of `TOML,` and it is not recommended to use it for complex configuration files. But for those who want a fast, simple one, **Pierced** is of no doubt a good choice.
 
@@ -122,10 +124,10 @@ name = 'Username'
 # The name of the user
 ```
 
-### `@Category` to categorize fields:
+### `@Table` to categorize fields:
 
 ```java
-@Category("user")
+@Table("user")
 public String name = "Username"; // Categorized
 
 public int people = 100; // Uncategorized
