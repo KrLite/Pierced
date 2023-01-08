@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     implementation 'com.github.KrLite:Pierced:xxx'
-    // Replace xxx with the latest tag name
+    // Replace xxx with the latest tag name(starts with 'v')
 }
 ```
 
