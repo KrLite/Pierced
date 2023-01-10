@@ -109,8 +109,8 @@ public class Config extends Pierced<Config> {
 		super(Config.class, file);
 	}
 	
-    @Comment("The name of the user")
-    public String name = "Username";
+	@Comment("The name of the user")
+	public String name = "Username";
 }
 ```
 
