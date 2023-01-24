@@ -16,14 +16,15 @@ After implementation, you should extend the `Pierced` class and add your own con
 
 ```groovy
 repositories {
-    maven { url 'https://jitpack.io' }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    implementation 'com.github.KrLite:Pierced:xxx'
-    // Replace xxx with the latest tag name(starts with 'v')
+    implementation "com.github.KrLite:Pierced:v{x}"
 }
 ```
+
+> The `v{x}` above should be replaced by the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced.**
 
 ## Intro
 
