@@ -154,4 +154,4 @@ Only the fields not annotated by `@Silent` will be saved and loaded.
 
 ## License
 
-**Pierced** is available under **[GNU Public License.](LICENSE)**
+**Pierced** is available under **[GNU Leeser Public License.](LICENSE)**
