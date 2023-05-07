@@ -36,7 +36,7 @@ The sacrifice of such a small size is that **Pierced** is not a full-featured `T
 
 ## Usage
 
-### `1` Create your config class that extends `Pierced.class:`
+### `1` Create your config class which extends `Pierced.class:`
 
 ```java
 public class Config extends Pierced {
@@ -115,7 +115,7 @@ public class Config extends Pierced<Config> {
 }
 ```
 
-And it will be:
+Result:
 
 ```toml
 # THIS CONFIGURATION FILE IS FOR DEMO
@@ -134,7 +134,7 @@ public String name = "Username"; // Categorized
 public int people = 100; // Uncategorized
 ```
 
-And it will be:
+Result:
 
 ```toml
 people = 100
