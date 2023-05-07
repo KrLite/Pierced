@@ -115,7 +115,7 @@ public class Config extends Pierced<Config> {
 }
 ```
 
-Result:
+`Result:`
 
 ```toml
 # THIS CONFIGURATION FILE IS FOR DEMO
@@ -134,7 +134,7 @@ public String name = "Username"; // Categorized
 public int people = 100; // Uncategorized
 ```
 
-Result:
+`Result:`
 
 ```toml
 people = 100
