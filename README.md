@@ -18,11 +18,11 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.KrLite:Pierced:vx"
+    implementation "com.github.KrLite:Pierced:v?"
 }
 ```
 
-> The `vx` above should be replaced by the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced.**
+> The `v?` above should be replaced by the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced.**
 
 After implementation, you should extend the `Pierced` class and add your own config fields.
 
