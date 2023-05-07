@@ -12,19 +12,19 @@
 
 ## TL;DR
 
-After implementation, you should extend the `Pierced` class and add your own config fields.
-
 ```groovy
 repositories {
     maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    implementation "com.github.KrLite:Pierced:v{x}"
+    implementation "com.github.KrLite:Pierced:vx"
 }
 ```
 
-> The `v{x}` above should be replaced by the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced.**
+> The `vx` above should be replaced by the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced.**
+
+After implementation, you should extend the `Pierced` class and add your own config fields.
 
 ## Intro
 
