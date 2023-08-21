@@ -23,18 +23,13 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.KrLite:Pierced:${project.pierced_version}'
+	implementation 'com.github.KrLite:Pierced:?'
 }
 ```
 
 ###### <p align=right>settings.gradle</p>
 ```groovy
-include 'com.github.KrLite:Pierced:${project.pierced_version}'
-```
-
-###### <p align=right>gradle.properties</p>
-```
-pierced_version=?
+include 'com.github.KrLite:Pierced:?'
 ```
 
 > [!NOTE]
@@ -53,18 +48,13 @@ repositories {
 }
 
 dependencies {
-	implementation("com.github.KrLite:Pierced:${project.pierced_version}")
+	implementation("com.github.KrLite:Pierced:?")
 }
 ```
 
 ###### <p align=right>settings.gradle.kts</p>
 ```kotlin
-include("com.github.KrLite:Pierced:${project.pierced_version}")
-```
-
-###### <p align=right>gradle.properties</p>
-```
-pierced_version=?
+include("com.github.KrLite:Pierced:?")
 ```
 
 > [!NOTE]
@@ -200,4 +190,4 @@ public @Silent int age = 18; // Invisible
 
 [^literal_strings]: Literal strings can be read, but will be seen the same as basic strings for now. All strings are saved as literal strings in case of complex escaping.
 [^scientific_notation]: Scientific notation is not supported yet.
-[^size]: Pierced compiled and sources JARs are just 16KB and 8KB, respectively.
+[^size]: Currently, **Pierced** compiled and source JARs are only 16KB and 8KB, respectively.
