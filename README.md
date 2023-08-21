@@ -1,42 +1,88 @@
 ### <p align=right>[`→` JitPack](https://jitpack.io/#KrLite/Pierced)</p>
 
 <picture>
-    	<source media="(prefers-color-scheme: dark)" srcset="/artwork/banner-dim.png?raw=true" />
-    	<img src="/artwork/banner-bright.png?raw=true" />
+	<source media="(prefers-color-scheme: dark)" srcset="/artwork/banner-dim.png?raw=true"/>
+	<img src="/artwork/banner-bright.png?raw=true"/>
 </picture>
 
-<br />
-<br />
+<br/>
+<br/>
 
-**Pierced** is a lightweight library for java which handles extremely simple [`TOML`](https://toml.io) configuration files.
+**Pierced** is a lightweight Java library which handles basic [TOML](https://toml.io) configuration files.
 
-## TL;DR
+## Gradle
 
+<details>
+
+<summary>Groovy</summary>
+
+###### <p align=right>build.gradle</p>
 ```groovy
 repositories {
-    maven { url "https://jitpack.io" }
+	maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    implementation "com.github.KrLite:Pierced:v?"
+	implementation 'com.github.KrLite:Pierced:${project.pierced_version}'
 }
 ```
 
-> The `v?` above should be replaced by the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced.**
+###### <p align=right>settings.gradle</p>
+```groovy
+include 'com.github.KrLite:Pierced:${project.pierced_version}'
+```
 
-After implementation, you should extend the `Pierced` class and add your own config fields.
+###### <p align=right>gradle.properties</p>
+```
+pierced_version=?
+```
 
-## Intro
+> [!NOTE]
+> Replace `?` with the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced**.
 
-**Pierced is only 16KB.[^size]** You can bring **Pierced** anywhere you want.
+</details>
 
-[^size]: The compiled jar of **Pierced** is currently 16KB, and the sources jar is only 8KB.
+<details>
 
-The sacrifice of such a small size is that **Pierced** is not a full-featured `TOML` parser. It only supports the most basic features of `TOML,` and it is not recommended to use it for complex configuration files. But for those who want a fast, simple one, **Pierced** is of no doubt a good choice.
+<summary>Kotlin</summary>
+
+###### <p align=right>build.gradle.kts</p>
+```kotlin
+repositories {
+	maven("https://jitpack.io")
+}
+
+dependencies {
+	implementation("com.github.KrLite:Pierced:${project.pierced_version}")
+}
+```
+
+###### <p align=right>settings.gradle.kts</p>
+```kotlin
+include("com.github.KrLite:Pierced:${project.pierced_version}")
+```
+
+###### <p align=right>gradle.properties</p>
+```
+pierced_version=?
+```
+
+> [!NOTE]
+> Replace `?` with the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced**.
+
+</details>
+
+Once implemented, extend `Pierced` class and add your own configuration fields.
+
+## Introduction
+
+**Pierced is only 16KB**[^size]. You can bring **Pierced** anywhere you want.
+
+The sacrifice of such a small size is that **Pierced** is not a full-featured TOML parser. It only supports the most basic features of TOML, and so is not recommended for complex configuration files. Still, for those who want something fast and simple, **Pierced** is a solid choice.
 
 ## Usage
 
-### `1` Create your config class which extends `Pierced.class:`
+### 1. Create a `Config` class which extends `Pierced` class:
 
 ```java
 public class Config extends Pierced {
@@ -53,7 +99,7 @@ public class Config extends Pierced {
 }
 ```
 
-### `2` Create a `Config` instance and load the config file:
+### 2. Create a `Config` instance and load the configuration file:
 
 ```java
 Config config = new Config(new File("config.toml"));
@@ -63,7 +109,7 @@ Config config = new Config(new File("config.toml"));
 config.load();
 ```
 
-### `3` Use and save the config:
+### 3. Use and save the configuration:
 
 ```java
 System.out.println(config.name);
@@ -73,28 +119,23 @@ config.age = 18;
 config.save();
 ```
 
-## Compatibility
+## Features
 
-**Pierced** supports most of the `TOML` features:
-
-- Basic strings and literal strings[^literal_strings]
-- Multiline basic strings and literal strings[^literal_strings]
-
-[^literal_strings]: Literal strings can be read, but they will be seen the same as basic strings for now. All the strings are saved as literal strings in case of complex escaping.
-
-- Boolean values
-- Integer(bin, oct, dec and hex) values and float values with underscores[^scientific_notation]
-
-[^scientific_notation]: Scientific notation is not supported yet.
+**Pierced** supports most of TOML features:
 
 - (±)nan and (±)infinity
+- Basic strings and literal strings[^literal_strings]
+- Boolean values
 - Full-line comments and inline comments
-- Tables(as dotted keys)
+- Integer (bin, oct, dec and hex) values and float values with underscores[^scientific_notation]
+- Multiline basic strings and literal strings[^literal_strings]
+- Tables (dotted keys)
 
-**What Pierced does not support for now:**
+> [!WARNING]
+> **Pierced** does not support these features for now:
 
-- Dates and times
 - Array values
+- Dates and times
 
 ## Annotations
 
@@ -115,7 +156,7 @@ public class Config extends Pierced<Config> {
 }
 ```
 
-`Result:`
+#### Result:
 
 ```toml
 # THIS CONFIGURATION FILE IS FOR DEMO
@@ -134,7 +175,7 @@ public String name = "Username"; // Categorized
 public int people = 100; // Uncategorized
 ```
 
-`Result:`
+#### Result:
 
 ```toml
 people = 100
@@ -150,8 +191,13 @@ public String name = "Username"; // Visible
 public @Silent int age = 18; // Invisible
 ```
 
-Only the fields not annotated by `@Silent` will be saved and loaded.
+> [!IMPORTANT]
+> Only fields not annotated with `@Silent` will be saved and loaded.
 
 ## License
 
-**Pierced** is licensed under the **[GNU General Public License v3.](LICENSE)**
+**Pierced** is licensed under the **[GNU Lesser General Public License v3.0 or later](LICENSE)**.
+
+[^literal_strings]: Literal strings can be read, but will be seen the same as basic strings for now. All strings are saved as literal strings in case of complex escaping.
+[^scientific_notation]: Scientific notation is not supported yet.
+[^size]: Pierced compiled and sources JARs are just 16KB and 8KB, respectively.
