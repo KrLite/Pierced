@@ -23,13 +23,13 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.KrLite:Pierced:?'
+	implementation include("com.github.KrLite:Pierced:$project.pierced_version")
 }
 ```
 
-###### <p align=right>settings.gradle</p>
-```groovy
-include 'com.github.KrLite:Pierced:?'
+###### <p align=right>gradle.properties</p>
+```
+pierced_version=?
 ```
 
 > [!NOTE]
@@ -48,13 +48,15 @@ repositories {
 }
 
 dependencies {
-	implementation("com.github.KrLite:Pierced:?")
+	include("com.github.KrLite:Pierced:${property("piercedVersion")}")?.let {
+		implementation(it)
+	}
 }
 ```
 
-###### <p align=right>settings.gradle.kts</p>
-```kotlin
-include("com.github.KrLite:Pierced:?")
+###### <p align=right>gradle.properties</p>
+```
+piercedVersion=?
 ```
 
 > [!NOTE]
