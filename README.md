@@ -8,7 +8,7 @@
 <br/>
 <br/>
 
-**Pierced** is a lightweight Java library which handles basic [TOML](https://toml.io) configuration files.
+**Pierced** is a lightweight Java library which handles basic **[TOML](https://toml.io)** configuration files.
 
 ## Gradle
 
@@ -64,11 +64,15 @@ piercedVersion=?
 
 </details>
 
-Once implemented, extend `Pierced` class and add your own configuration fields.
+Once implemented, extend `Pierced`[^pierced_classpath] class and add your own configuration fields.
+
+[^pierced_classpath]: `net.krlite.pierced.config.Pierced`
 
 ## Introduction
 
 **Pierced is only 16KB**[^size]. You can bring **Pierced** anywhere you want.
+
+[^size]: Currently, **Pierced** compiled and source JARs are only 16KB and 8KB, respectively.
 
 The sacrifice of such a small size is that **Pierced** is not a full-featured TOML parser. It only supports the most basic features of TOML, and so is not recommended for complex configuration files. Still, for those who want something fast and simple, **Pierced** is a solid choice.
 
@@ -122,6 +126,9 @@ config.save();
 - Integer (bin, oct, dec and hex) values and float values with underscores[^scientific_notation]
 - Multiline basic strings and literal strings[^literal_strings]
 - Tables (dotted keys)
+
+[^literal_strings]: Literal strings can be read, but will be seen the same as basic strings for now. All strings are saved as literal strings in case of complex escaping.
+[^scientific_notation]: Scientific notation is not supported yet.
 
 > [!WARNING]
 > **Pierced** does not support these features for now:
@@ -189,7 +196,3 @@ public @Silent int age = 18; // Invisible
 ## License
 
 **Pierced** is licensed under the **[GNU Lesser General Public License v3.0 or later](LICENSE)**.
-
-[^literal_strings]: Literal strings can be read, but will be seen the same as basic strings for now. All strings are saved as literal strings in case of complex escaping.
-[^scientific_notation]: Scientific notation is not supported yet.
-[^size]: Currently, **Pierced** compiled and source JARs are only 16KB and 8KB, respectively.
