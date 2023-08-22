@@ -21,8 +21,8 @@ sourceSets {
 
 java {
     withSourcesJar()
-    setSourceCompatibility(JavaVersion.VERSION_20)
-    setTargetCompatibility(JavaVersion.VERSION_20)
+    setSourceCompatibility(JavaVersion.VERSION_1_8)
+    setTargetCompatibility(JavaVersion.VERSION_1_8)
 }
 
 publishing {
