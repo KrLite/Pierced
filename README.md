@@ -117,7 +117,7 @@ config.save();
 
 ## Features
 
-**Pierced** supports most of TOML features:
+**Pierced** supports most of the **TOML** features:
 
 - (±)nan and (±)infinity
 - Basic strings and literal strings[^literal_strings]
@@ -195,4 +195,4 @@ public @Silent int age = 18; // Invisible
 
 ## License
 
-**Pierced** is licensed under the **[GNU Lesser General Public License v3.0 or later](LICENSE)**.
+**Pierced** is licensed under the **[GNU Lesser General Public License v3.0.](LICENSE)**

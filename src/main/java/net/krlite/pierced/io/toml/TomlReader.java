@@ -4,10 +4,7 @@ import net.krlite.pierced.core.Convertable;
 import net.krlite.pierced.core.EnumLocalizable;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -77,7 +74,8 @@ public class TomlReader {
 
 	private HashMap<String, String> read(File file) throws IOException {
 		final HashMap<String, String> result = new HashMap<>();
-		FileReader reader = new FileReader(file, StandardCharsets.UTF_8);
+		FileInputStream fis = new FileInputStream(file);
+		InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
 		BufferedReader bufferedReader = new BufferedReader(reader);
 
 		String line, category = "";
