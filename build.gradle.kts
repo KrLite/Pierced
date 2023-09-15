@@ -8,7 +8,7 @@ group = property("maven_group").toString()
 version = property("lib_version").toString()
 
 base {
-    archivesName.set(rootProject.property("archives_base_name").toString())
+    archivesName.set(rootProject.property("archives_name").toString())
 }
 
 sourceSets {
