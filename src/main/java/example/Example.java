@@ -3,6 +3,7 @@ package example;
 import net.krlite.pierced_dev.Pierced;
 import net.krlite.pierced_dev.annotation.Table;
 import net.krlite.pierced_dev.ast.io.Reader;
+import net.krlite.pierced_dev.ast.util.Util;
 import net.krlite.pierced_dev.serialization.PrimitiveSerializers;
 
 import java.awt.*;
@@ -10,6 +11,10 @@ import java.io.File;
 
 public class Example {
     public static void main(String[] args) {
+        System.out.println("=== UTIL ===");
+        System.out.println("raw: " + "\\u0041,\\U0001F600");
+        System.out.println("unescaped: " + Util.unescape("\\u0041,\\U0001F600"));
+
         System.out.println("=== READ ===");
         Reader reader = new Reader(new File("src/main/java/example/config/example.toml"));
 

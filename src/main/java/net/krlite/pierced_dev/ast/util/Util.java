@@ -13,6 +13,20 @@ import java.util.Base64;
 import java.util.regex.Matcher;
 
 public class Util {
+    public static final String NEWLINE = "\r\n";
+
+    public static String hash(String string) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+        byte[] hash = digest.digest(string.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(hash);
+    }
+
     public static String normalizeStdTable(String rawStdTable) {
         return normalizeKey(rawStdTable
                 .replaceAll("^" + Table.STD_TABLE_OPEN.pattern(), "")
@@ -26,9 +40,8 @@ public class Util {
                 .replaceAll("\\.$", "");
         ArrayList<Character> letters = new ArrayList<>();
 
-        for (int i = 0; i < rawKey.length(); i++) {
-            letters.add(rawKey.toCharArray()[i]);
-        }
+        for (char c : rawKey.toCharArray())
+            letters.add(c);
 
         return letters.stream()
                 .map(String::valueOf)
@@ -37,7 +50,7 @@ public class Util {
                 .orElse("");
     }
 
-    public static String unescapeKey(String normalizedKey, boolean hash) {
+    public static String flatten(String normalizedKey, boolean hash) {
         Matcher dottedKeyMatcher = Key.DOTTED_KEY.matcher(normalizedKey);
         boolean dottedKeyMatched = dottedKeyMatcher.matches();
 
@@ -50,7 +63,7 @@ public class Util {
 
             while (innerSimpleKeyMatcher.find()) {
                 String innerSimpleKey = innerSimpleKeyMatcher.group();
-                innerKeys.add(unescapeKey(innerSimpleKey, true));
+                innerKeys.add(flatten(innerSimpleKey, true));
             }
 
             return String.join(".", innerKeys);
@@ -84,15 +97,40 @@ public class Util {
         return hash ? hash(normalizedKey) : normalizedKey;
     }
 
-    public static String hash(String string) {
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+    public static String unescape(String raw) {
+        Matcher escapedMatcher = BasicString.ESCAPED.matcher(raw);
+        StringBuffer buffer = new StringBuffer();
+
+        while (escapedMatcher.find()) {
+            String component = escapedMatcher.group();
+            component = component.replaceFirst(BasicString.ESCAPE.pattern(), "");
+            System.out.println(component);
+
+            if ("b".equals(component))
+                escapedMatcher.appendReplacement(buffer, "\b");
+
+            if ("f".equals(component))
+                escapedMatcher.appendReplacement(buffer, "\f");
+
+            if ("n".equals(component))
+                escapedMatcher.appendReplacement(buffer, "\n");
+
+            if ("r".equals(component))
+                escapedMatcher.appendReplacement(buffer, "\r");
+
+            if ("t".equals(component))
+                escapedMatcher.appendReplacement(buffer, "\t");
+
+            if (component.startsWith("u") || component.startsWith("U")) {
+                String unicode = component.replaceFirst("[uU]", "");
+                System.out.println(unicode);
+
+                escapedMatcher.appendReplacement(buffer, "");
+                buffer.appendCodePoint(Integer.parseInt(unicode, 16));
+            }
         }
 
-        byte[] hash = digest.digest(string.getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(hash);
+        escapedMatcher.appendTail(buffer);
+        return buffer.toString();
     }
 }

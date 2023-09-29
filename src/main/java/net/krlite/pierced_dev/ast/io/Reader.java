@@ -1,5 +1,6 @@
 package net.krlite.pierced_dev.ast.io;
 
+import net.krlite.pierced_dev.WithFile;
 import net.krlite.pierced_dev.ast.regex.key.Key;
 import net.krlite.pierced_dev.ast.regex.key.Table;
 import net.krlite.pierced_dev.ast.regex.primitive.Primitive;
@@ -8,29 +9,18 @@ import net.krlite.pierced_dev.serialization.base.Deserializable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Reader {
-	protected final File file;
-	protected final HashMap<Long, Exception> exceptions = new HashMap<>();
-
+public class Reader extends WithFile {
 	public Reader(File file) {
-		this.file = file;
+		super(file);
 	}
 
+	@Override
 	public File file() {
-		return file;
-	}
-
-	public HashMap<Long, Exception> exceptions() {
-		return new HashMap<>(exceptions);
-	}
-
-	protected void addException(Exception e) {
-		exceptions.put(System.currentTimeMillis(), e);
+		return super.file();
 	}
 
 	public Optional<BufferedReader> readFromFile() {
@@ -38,7 +28,7 @@ public class Reader {
 		try {
 			fis = new FileInputStream(file());
 		} catch (FileNotFoundException e) {
-			addException(new IOException("File '" + file.getName() + "' does not exist"));
+			addException(new IOException("File '" + file().getName() + "' does not exist"));
 			return Optional.empty();
 		}
 
@@ -46,11 +36,11 @@ public class Reader {
 		return Optional.of(new BufferedReader(reader));
 	}
 
-	public <T> Optional<T> get(String key, Deserializable<T> deserializable) {
+	public <T> Optional<T> get(String rawKey, Deserializable<T> deserializable) {
 		Optional<BufferedReader> bufferedReader = readFromFile();
 		if (!bufferedReader.isPresent()) return Optional.empty();
 
-		key = Util.unescapeKey(Util.normalizeKey(key), true);
+		rawKey = Util.flatten(Util.unescape(Util.normalizeKey(rawKey)), true);
 		String line, keyValuePair = "";
 
 		while (true) {
@@ -74,8 +64,10 @@ public class Reader {
 					boolean stdTableMatcherFound = stdTableMatcher.find();
 
 					if (stdTableMatcherFound) {
-						String stdTable = Util.unescapeKey(Util.normalizeStdTable(stdTableMatcher.group()), true);
-						key = key.replaceFirst("^" + stdTable + ".", "");
+						String stdTable = stdTableMatcher.group();
+						stdTable = Util.flatten(Util.unescape(Util.normalizeStdTable(stdTable)), true);
+
+						rawKey = rawKey.replaceFirst("^" + stdTable + ".", "");
 					}
 				}
 
@@ -84,9 +76,10 @@ public class Reader {
 
 				if (keyFound) {
 					// Key found
-					String localKey = Util.unescapeKey(Util.normalizeKey(matcher.group()), true);
+					String key = matcher.group();
+					key = Util.flatten(Util.unescape(Util.normalizeKey(key)), true);
 
-					if (localKey.equals(key)) {
+					if (key.equals(rawKey)) {
 						// Key matched
 						matcher.usePattern(Key.KEYVAL_SEP);
 						boolean keyvalSepFound = matcher.find();
