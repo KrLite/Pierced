@@ -2,53 +2,82 @@ package net.krlite.pierced_dev.ast.io;
 
 import net.krlite.pierced_dev.ast.regex.key.Key;
 import net.krlite.pierced_dev.ast.regex.key.Table;
-import net.krlite.pierced_dev.ast.regex.recursive.Array;
+import net.krlite.pierced_dev.ast.regex.primitive.Primitive;
+import net.krlite.pierced_dev.ast.util.NormalizeUtil;
+import net.krlite.pierced_dev.serialization.base.Deserializable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.*;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Reader {
-	public static final Class<?>[] PRIMITIVE_TYPES = {
-			String.class,
-			Character.class, char.class,
-			Boolean.class, boolean.class,
-			Byte.class, byte.class,
-			Short.class, short.class,
-			Integer.class, int.class,
-			Long.class, long.class,
-			Float.class, float.class,
-			Double.class, double.class
-	};
+	protected final File file;
+	protected final HashMap<Long, Exception> exceptions = new HashMap<>();
 
-	public static final Class<?>[] RECURSIVE_TYPES = {
-		Array.class, Map.class
-	};
+	public Reader(File file) {
+		this.file = file;
+	}
 
-	public static <T> T read(File file, String key, Class<T> expectedType) throws IOException {
-		FileInputStream fis = new FileInputStream(file);
+	public File file() {
+		return file;
+	}
+
+	public Map<Long, Exception> exceptions() {
+		return new HashMap<>(exceptions);
+	}
+
+	protected void addException(Exception e) {
+		exceptions.put(System.currentTimeMillis(), e);
+	}
+
+	public BufferedReader readFromFile() {
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(file());
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+
 		InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-		BufferedReader bufferedReader = new BufferedReader(reader);
+		return new BufferedReader(reader);
+	}
 
-		final HashMap<String, String> result = new HashMap<>();
+	/**
+	 * Gets a value by a key.
+	 * @param key	The key of the target value.
+	 * @param deserializable	The {@link Deserializable} to deserialize the value.
+	 * @return	An {@link Optional} of the value.
+	 * @param <T>	The type of the value.
+	 */
+	public <T> Optional<T> get(String key, Deserializable<T> deserializable) {
+		BufferedReader bufferedReader = readFromFile();
+		key = NormalizeUtil.normalizeKey(key);
+		key = NormalizeUtil.unescapeKey(key, false);
 		String line, keyValuePair = "";
 
-		while ((line = bufferedReader.readLine()) != null) {
-			// Find the key
+		while (true) {
+			try {
+				if ((line = bufferedReader.readLine()) == null) break;
+			} catch (IOException e) {
+				addException(e);
+				break;
+			}
+			Matcher matcher = Pattern.compile("").matcher(line);
+
 			if (keyValuePair.isEmpty()) {
-				Matcher tableMatcher = Table.TABLE.matcher(line);
-				Matcher keyMatcher = Key.KEY.matcher(line);
+                matcher.usePattern(Table.TABLE);
+                boolean tableFound = matcher.find();
 
-				if (!keyMatcher.find() && !tableMatcher.find()) continue;
+				if (tableFound) {
+					// Table found
+					String table = matcher.group();
 
-				if (tableMatcher.find()) {
-					String table = tableMatcher.group(1);
 					Matcher stdTableMatcher = Table.STD_TABLE.matcher(table);
-					if (stdTableMatcher.find()) {
+					boolean stdTableMatcherFound = stdTableMatcher.find();
+
+					if (stdTableMatcherFound) {
 						String stdTable = stdTableMatcher.group(1);
 						if (!key.startsWith(stdTable)) {
 							continue;
@@ -56,27 +85,42 @@ public class Reader {
 					}
 				}
 
-				else if (keyMatcher.find()) {
-					String keyName = keyMatcher.group(1);
-					Matcher dottedKeyMatcher = Key.DOTTED_KEY.matcher(keyName);
-					Matcher simpleKeyMatcher = Key.SIMPLE_KEY.matcher(keyName);
+                matcher.usePattern(Key.KEY);
+                boolean keyFound = matcher.find();
 
-					if (dottedKeyMatcher.find()) {
-						String dottedKey = dottedKeyMatcher.group(1);
-						if (!key.equals(dottedKey)) {
-							continue;
-						}
-					}
-					else if (simpleKeyMatcher.find()) {
-						String simpleKey = simpleKeyMatcher.group(1);
-						if (!key.equals(simpleKey)) {
-							continue;
+				if (keyFound) {
+					// Key found
+					String normalizedKey = NormalizeUtil.normalizeKey(matcher.group());
+					String localKey = NormalizeUtil.unescapeKey(normalizedKey, false);
+
+					if (localKey.equals(key)) {
+						// Key matched
+						matcher.usePattern(Key.KEYVAL_SEP);
+						boolean keyvalSepFound = matcher.find();
+
+						if (keyvalSepFound) {
+							// Key-val Sep found
+							String keyvalSep = matcher.group();
+
+							matcher.usePattern(Primitive.PRIMITIVE);
+							boolean primitiveFound = matcher.find();
+
+							if (primitiveFound) {
+								// Primitive found
+								String primitiveValue = matcher.group();
+								return deserializable.deserialize(primitiveValue);
+							}
 						}
 					}
 				}
-
-				keyValuePair = line;
 			}
 		}
+
+		try {
+			bufferedReader.close();
+		} catch (IOException e) {
+			addException(e);
+		}
+		return Optional.empty();
 	}
 }

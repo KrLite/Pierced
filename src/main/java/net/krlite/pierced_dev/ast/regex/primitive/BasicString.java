@@ -10,8 +10,14 @@ public class BasicString extends ABNF {
 	public static final Pattern QUOTATION_MARK = Pattern.compile("\"");
 
 	public static final Pattern ESCAPE = Pattern.compile("\\\\");
-	public static final Pattern ESCAPE_SEQ_CHAR = join(
-			Pattern.compile("[\\\\\"/bfnrt]"),
+	public static final Pattern ESCAPE_SEQ_CHAR = or(
+			C('\"'),
+			Pattern.compile("\\\\"),
+			C('b'),
+			C('f'),
+			C('n'),
+			C('r'),
+			C('t'),
 			chain(
 					C('u'),
 					repeats(HEXDIG, 4)
@@ -25,7 +31,7 @@ public class BasicString extends ABNF {
 	public static final Pattern ESCAPED = chain(ESCAPE, ESCAPE_SEQ_CHAR);
 	public static final Pattern BASIC_UNESCAPED = or(
 			Whitespace.WSCHAR,
-			Pattern.compile("\\x21\\x23-\\x5B\\x5D-\\x7E"),
+			Pattern.compile("[\\x21\\x23-\\x5B\\x5D-\\x7E]"),
 			Comment.NON_ASCII
 	);
 	public static final Pattern BASIC_CHAR = or(BASIC_UNESCAPED, ESCAPED);

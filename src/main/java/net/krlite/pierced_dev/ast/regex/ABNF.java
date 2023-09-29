@@ -85,9 +85,7 @@ public class ABNF {
 		return Pattern.compile("(" + pattern.pattern() + ")");
 	}
 
-	/*
 	public static Pattern group(String name, Pattern pattern) {
 		return Pattern.compile("(?<" + name + ">" + pattern.pattern() + ")");
 	}
-	 */
 }
