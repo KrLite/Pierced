@@ -3,13 +3,13 @@ package net.krlite.pierced_dev.ast.io;
 import net.krlite.pierced_dev.ast.regex.key.Key;
 import net.krlite.pierced_dev.ast.regex.key.Table;
 import net.krlite.pierced_dev.ast.regex.primitive.Primitive;
-import net.krlite.pierced_dev.ast.util.NormalizeUtil;
-import net.krlite.pierced_dev.serialization.PrimitiveSerializers;
+import net.krlite.pierced_dev.ast.util.Util;
 import net.krlite.pierced_dev.serialization.base.Deserializable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +25,7 @@ public class Reader {
 		return file;
 	}
 
-	public Map<Long, Exception> exceptions() {
+	public HashMap<Long, Exception> exceptions() {
 		return new HashMap<>(exceptions);
 	}
 
@@ -33,35 +33,29 @@ public class Reader {
 		exceptions.put(System.currentTimeMillis(), e);
 	}
 
-	public BufferedReader readFromFile() {
+	public Optional<BufferedReader> readFromFile() {
 		FileInputStream fis;
 		try {
 			fis = new FileInputStream(file());
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+			addException(new IOException("File '" + file.getName() + "' does not exist"));
+			return Optional.empty();
 		}
 
 		InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-		return new BufferedReader(reader);
+		return Optional.of(new BufferedReader(reader));
 	}
 
-	/**
-	 * Gets a value by a key.
-	 * @param key	The key of the target value.
-	 * @param deserializable	The {@link Deserializable} to deserialize the value.
-	 *                          For primitive types, use the serializers defined in {@link PrimitiveSerializers}.
-	 * @return	An {@link Optional} of the value.
-	 * @param <T>	The type of the value.
-	 */
 	public <T> Optional<T> get(String key, Deserializable<T> deserializable) {
-		BufferedReader bufferedReader = readFromFile();
-		key = NormalizeUtil.normalizeKey(key);
-		key = NormalizeUtil.unescapeKey(key, false);
+		Optional<BufferedReader> bufferedReader = readFromFile();
+		if (!bufferedReader.isPresent()) return Optional.empty();
+
+		key = Util.unescapeKey(Util.normalizeKey(key), true);
 		String line, keyValuePair = "";
 
 		while (true) {
 			try {
-				if ((line = bufferedReader.readLine()) == null) break;
+				if ((line = bufferedReader.get().readLine()) == null) break;
 			} catch (IOException e) {
 				addException(e);
 				break;
@@ -80,10 +74,8 @@ public class Reader {
 					boolean stdTableMatcherFound = stdTableMatcher.find();
 
 					if (stdTableMatcherFound) {
-						String stdTable = stdTableMatcher.group(1);
-						if (!key.startsWith(stdTable)) {
-							continue;
-						}
+						String stdTable = Util.unescapeKey(Util.normalizeStdTable(stdTableMatcher.group()), true);
+						key = key.replaceFirst("^" + stdTable + ".", "");
 					}
 				}
 
@@ -92,8 +84,7 @@ public class Reader {
 
 				if (keyFound) {
 					// Key found
-					String normalizedKey = NormalizeUtil.normalizeKey(matcher.group());
-					String localKey = NormalizeUtil.unescapeKey(normalizedKey, false);
+					String localKey = Util.unescapeKey(Util.normalizeKey(matcher.group()), true);
 
 					if (localKey.equals(key)) {
 						// Key matched
@@ -119,7 +110,7 @@ public class Reader {
 		}
 
 		try {
-			bufferedReader.close();
+			bufferedReader.get().close();
 		} catch (IOException e) {
 			addException(e);
 		}

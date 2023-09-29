@@ -1,6 +1,7 @@
 package net.krlite.pierced_dev.ast.util;
 
 import net.krlite.pierced_dev.ast.regex.key.Key;
+import net.krlite.pierced_dev.ast.regex.key.Table;
 import net.krlite.pierced_dev.ast.regex.primitive.BasicString;
 import net.krlite.pierced_dev.ast.regex.primitive.LiteralString;
 
@@ -10,10 +11,19 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
-public class NormalizeUtil {
+public class Util {
+    public static String normalizeStdTable(String rawStdTable) {
+        return normalizeKey(rawStdTable
+                .replaceAll("^" + Table.STD_TABLE_OPEN.pattern(), "")
+                .replaceAll(Table.STD_TABLE_CLOSE.pattern() + "$", ""));
+    }
+
     public static String normalizeKey(String rawKey) {
+        rawKey = rawKey
+                .trim()
+                .replaceAll("^\\.", "")
+                .replaceAll("\\.$", "");
         ArrayList<Character> letters = new ArrayList<>();
 
         for (int i = 0; i < rawKey.length(); i++) {
@@ -58,9 +68,7 @@ public class NormalizeUtil {
 
                 if (basicStringFound) {
                     String key = normalizedKey.replaceAll(BasicString.QUOTATION_MARK.pattern(), "");
-                    if (hash)
-                        return hash(key);
-                    else return key;
+                    return hash ? hash(key) : key;
                 }
 
                 Matcher literalStringMatcher = LiteralString.LITERAL_STRING.matcher(quotedKey);
@@ -68,14 +76,12 @@ public class NormalizeUtil {
 
                 if (literalStringFound) {
                     String key = normalizedKey.replaceAll(LiteralString.APOSTROPHE.pattern(), "");
-                    if (hash)
-                        return hash(key);
-                    else return key;
+                    return hash ? hash(key) : key;
                 }
             }
         }
 
-        return normalizedKey;
+        return hash ? hash(normalizedKey) : normalizedKey;
     }
 
     public static String hash(String string) {

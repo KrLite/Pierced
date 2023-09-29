@@ -3,6 +3,7 @@ package net.krlite.pierced_dev.serialization;
 import net.krlite.pierced_dev.ast.regex.primitive.Integer;
 import net.krlite.pierced_dev.serialization.base.Serializer;
 
+import java.awt.*;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
@@ -16,6 +17,7 @@ public class PrimitiveSerializers {
     public static final Serializer<Long> LONG = Serializer.build(PrimitiveSerializers::parseLong);
     public static final Serializer<Float> FLOAT = Serializer.build(PrimitiveSerializers::parseFloat);
     public static final Serializer<Double> DOUBLE = Serializer.build(PrimitiveSerializers::parseDouble);
+    public static final Serializer<Color> COLOR = Serializer.build(PrimitiveSerializers::parseColor, PrimitiveSerializers::formatColor);
 
     public static Optional<Boolean> parseBoolean(String value) {
         return Optional.of(Boolean.parseBoolean(value));
@@ -74,5 +76,49 @@ public class PrimitiveSerializers {
 
     public static Optional<Double> parseDouble(String value) {
         return parseFloatingPoint(value);
+    }
+
+    public static Optional<Color> parseColor(String value) {
+        return PrimitiveSerializers.parseLong(value)
+                .map(String::valueOf)
+                .map(Color::decode);
+    }
+
+    public static String formatColor(Color color) {
+        return String.format("#%06X", color.getRGB());
+    }
+
+    public static <T> Optional<Serializer<T>> getPrimitiveSerializer(Class<T> tClass) {
+        if (tClass == String.class)
+            return Optional.of((Serializer<T>) STRING);
+
+        if (tClass == Character.class || tClass == char.class)
+            return Optional.of((Serializer<T>) CHARACTER);
+
+        if (tClass == Boolean.class || tClass == boolean.class)
+            return Optional.of((Serializer<T>) BOOLEAN);
+
+        if (tClass == Byte.class || tClass == byte.class)
+            return Optional.of((Serializer<T>) BYTE);
+
+        if (tClass == Short.class || tClass == short.class)
+            return Optional.of((Serializer<T>) SHORT);
+
+        if (tClass == Integer.class || tClass == int.class)
+            return Optional.of((Serializer<T>) INTEGER);
+
+        if (tClass == Long.class || tClass == long.class)
+            return Optional.of((Serializer<T>) LONG);
+
+        if (tClass == Float.class || tClass == float.class)
+            return Optional.of((Serializer<T>) FLOAT);
+
+        if (tClass == Double.class || tClass == double.class)
+            return Optional.of((Serializer<T>) DOUBLE);
+
+        if (tClass == Color.class)
+            return Optional.of((Serializer<T>) COLOR);
+
+        return Optional.empty();
     }
 }

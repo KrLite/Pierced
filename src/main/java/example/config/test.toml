@@ -1,7 +1,1 @@
-# ABC
-
-[enum]
-exEnum = 'a'
-# GHI
-
-# DEF
+a . b. c = 0xFF_FF_FF

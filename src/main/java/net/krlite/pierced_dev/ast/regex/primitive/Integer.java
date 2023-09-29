@@ -72,9 +72,9 @@ public class Integer extends ABNF {
 	);
 
 	public static final Pattern INTEGER = or(
-			DEC_INT,
 			HEX_INT,
 			OCT_INT,
-			BIN_INT
+			BIN_INT,
+			DEC_INT
 	);
 }
