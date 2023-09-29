@@ -4,6 +4,7 @@ import net.krlite.pierced_dev.ast.regex.key.Key;
 import net.krlite.pierced_dev.ast.regex.key.Table;
 import net.krlite.pierced_dev.ast.regex.primitive.Primitive;
 import net.krlite.pierced_dev.ast.util.NormalizeUtil;
+import net.krlite.pierced_dev.serialization.PrimitiveSerializers;
 import net.krlite.pierced_dev.serialization.base.Deserializable;
 
 import java.io.*;
@@ -48,6 +49,7 @@ public class Reader {
 	 * Gets a value by a key.
 	 * @param key	The key of the target value.
 	 * @param deserializable	The {@link Deserializable} to deserialize the value.
+	 *                          For primitive types, use the serializers defined in {@link PrimitiveSerializers}.
 	 * @return	An {@link Optional} of the value.
 	 * @param <T>	The type of the value.
 	 */
