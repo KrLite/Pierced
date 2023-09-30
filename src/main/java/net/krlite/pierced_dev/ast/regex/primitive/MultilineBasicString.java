@@ -11,7 +11,7 @@ public class MultilineBasicString extends ABNF {
 	public static final Pattern MLB_QUOTES = repeats(BasicString.QUOTATION_MARK, 1, 2);
 	public static final Pattern MLB_UNESCAPED = or(
 			Whitespace.WSCHAR,
-			Pattern.compile("\\x21\\x23-\\x5B\\x5D-\\x7E"),
+			Pattern.compile("[\\x21\\x23-\\x5B\\x5D-\\x7E]"),
 			Comment.NON_ASCII
 	);
 	public static final Pattern MLB_ESCAPED_NL = chain(

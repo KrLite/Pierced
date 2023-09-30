@@ -1,14 +1,18 @@
 package net.krlite.pierced_dev.serialization;
 
+import net.krlite.pierced_dev.ast.regex.NewLine;
 import net.krlite.pierced_dev.ast.regex.primitive.Integer;
+import net.krlite.pierced_dev.ast.regex.primitive.MultilineBasicString;
+import net.krlite.pierced_dev.ast.regex.primitive.MultilineLiteralString;
 import net.krlite.pierced_dev.serialization.base.Serializer;
 
 import java.awt.*;
 import java.util.Optional;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PrimitiveSerializers {
-    public static final Serializer<String> STRING = Serializer.build(Optional::of);
+    public static final Serializer<String> STRING = Serializer.build(PrimitiveSerializers::parseString);
     public static final Serializer<Character> CHARACTER = Serializer.build(s -> Optional.of(s.toCharArray()[0]));
     public static final Serializer<Boolean> BOOLEAN = Serializer.build(PrimitiveSerializers::parseBoolean);
     public static final Serializer<Byte> BYTE = Serializer.build(s -> Optional.of(s.getBytes()[0]));
@@ -18,6 +22,32 @@ public class PrimitiveSerializers {
     public static final Serializer<Float> FLOAT = Serializer.build(PrimitiveSerializers::parseFloat);
     public static final Serializer<Double> DOUBLE = Serializer.build(PrimitiveSerializers::parseDouble);
     public static final Serializer<Color> COLOR = Serializer.build(PrimitiveSerializers::parseColor, PrimitiveSerializers::formatColor);
+
+    public static Optional<String> parseString(String value) {
+        // Multiline basic string
+        if (MultilineBasicString.ML_BASIC_STRING.matcher(value).matches()) {
+            // Remove delims
+            value = value.replaceAll("^" + MultilineBasicString.ML_BASIC_STRING_DELIM.pattern() + "(" + NewLine.NEWLINE.pattern() + "|)", "");
+            value = value.replaceAll(MultilineBasicString.ML_BASIC_STRING_DELIM.pattern() + "$", "");
+
+            // Remove escaped new lines
+            value = value.replaceAll(MultilineBasicString.MLB_ESCAPED_NL.pattern(), "");
+
+            return Optional.of(value);
+        }
+
+        // Multiline literal string
+        if (MultilineLiteralString.ML_LITERAL_STRING.matcher(value).matches()) {
+            // Remove delims
+            value = value.replaceAll("^" + MultilineLiteralString.ML_LITERAL_STRING_DELIM.pattern(), "");
+            value = value.replaceAll(MultilineLiteralString.ML_LITERAL_STRING_DELIM.pattern() + "$", "");
+
+            return Optional.of(value);
+        }
+
+        // Basic string
+        return Optional.of(value);
+    }
 
     public static Optional<Boolean> parseBoolean(String value) {
         return Optional.of(Boolean.parseBoolean(value));
@@ -55,6 +85,14 @@ public class PrimitiveSerializers {
 
     public static Optional<Double> parseFloatingPoint(String value) {
         value = value.replaceAll("_", "");
+
+        if (value.endsWith("nan"))
+            return Optional.of(Double.NaN);
+
+        if (value.endsWith("inf")) {
+            return Optional.of(value.startsWith("-") ? Double.MIN_VALUE : Double.MAX_VALUE);
+        }
+
         return Optional.of(Double.parseDouble(value));
     }
 

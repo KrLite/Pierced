@@ -38,8 +38,8 @@ public class Util {
     public static String normalizeKey(String rawKey) {
         rawKey = rawKey
                 .trim()
-                .replaceAll("^\\.", "")
-                .replaceAll("\\.$", "");
+                .replaceAll("^" + Key.DOT_SEP.pattern(), "")
+                .replaceAll(Key.DOT_SEP.pattern() + "$", "");
         ArrayList<Character> letters = new ArrayList<>();
 
         for (char c : rawKey.toCharArray())
@@ -135,7 +135,7 @@ public class Util {
     }
 
     public static String escape(String raw, boolean escapeNewLines) {
-        raw = raw.replaceAll("\\\\(?!(u([0-9a-fA-F]){4})|(U([0-9a-fA-F]){8}))", "\\\\\\\\");
+        raw = raw.replaceAll(BasicString.ESCAPE.pattern() + "(?!(u([0-9a-fA-F]){4})|(U([0-9a-fA-F]){8}))", "\\\\\\\\");
         raw = raw.replaceAll("\"", "\\\\\"");
         raw = raw.replaceAll("\b", "\\\\b");
         raw = raw.replaceAll("\f", "\\\\f");
@@ -170,7 +170,7 @@ public class Util {
         boolean newLineFound = newLineMatcher.find();
 
         if (newLineFound)
-            return "\"\"\"" + LINE_TERMINATOR + escape(rawValue, false) + "\"\"\"";
+            return "\"\"\"\\" + LINE_TERMINATOR + escape(rawValue, false) + "\"\"\"";
 
         else return "\"" + escape(rawValue, true) + "\"";
     }

@@ -30,9 +30,11 @@ public class ABNF {
 
 	public static Pattern chain(Pattern... patterns) {
 		StringBuilder builder = new StringBuilder();
+
 		for (Pattern pattern : patterns) {
 			builder.append(pattern.pattern());
 		}
+
 		return Pattern.compile(builder.toString());
 	}
 

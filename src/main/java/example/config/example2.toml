@@ -1,7 +1,7 @@
 a_string = "String"
 
-a_multiline_string = """
-A \
+a_multiline_string = """abc
+A
  multiline \
 string"""
 # Should be "A multiline string"
@@ -12,3 +12,8 @@ a_literal_string = 'Literal string'
 a_boolean = true
 a_nan = -nan
 an_infinity = +inf
+
+a.'23.k' .   1 . 3 = true
+[b]
+"d" = 1.6e3
+c = 0xFFA0A0A0
