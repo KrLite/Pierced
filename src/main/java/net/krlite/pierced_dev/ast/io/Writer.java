@@ -73,7 +73,11 @@ public class Writer extends WithFile {
         Arrays.stream(comments).forEach(comment ->
                 Arrays.stream(comment.split(NewLine.NEWLINE.pattern()))
                         .map(Util::formatComment)
-                        .forEach(this::writeLine)
+                        .forEach(line -> {
+                            if (line.isEmpty())
+                                shouldInsertNewLine = true;
+                            else writeLine(line);
+                        })
         );
     }
 
@@ -167,6 +171,7 @@ public class Writer extends WithFile {
             }
 
             isFirstLine = false;
+            shouldInsertNewLine = false;
         }
 
         // Write line
