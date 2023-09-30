@@ -89,12 +89,13 @@ public class Reader extends WithFile {
 							// Key-val Sep found
 							String keyvalSep = matcher.group();
 
-							matcher.usePattern(Primitive.PRIMITIVE);
-							boolean primitiveFound = matcher.find();
+							Matcher primitiveMatcher = Primitive.PRIMITIVE.matcher(line.substring(matcher.end()));
+							boolean primitiveMatched = primitiveMatcher.matches();
 
-							if (primitiveFound) {
+							if (primitiveMatched) {
 								// Primitive found
-								String primitiveValue = matcher.group();
+								String primitiveValue = primitiveMatcher.group();
+
 								return deserializable.deserialize(primitiveValue);
 							}
 						}

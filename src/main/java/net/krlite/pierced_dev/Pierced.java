@@ -1,7 +1,6 @@
 package net.krlite.pierced_dev;
 
-import net.krlite.pierced_dev.annotation.Silent;
-import net.krlite.pierced_dev.annotation.Table;
+import net.krlite.pierced_dev.annotation.*;
 import net.krlite.pierced_dev.ast.io.Reader;
 import net.krlite.pierced_dev.ast.io.Writer;
 import net.krlite.pierced_dev.ast.util.Util;
@@ -11,9 +10,11 @@ import net.krlite.pierced_dev.serialization.base.Serializer;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class Pierced extends WithFile {
     private @Silent final Class<? extends Pierced> clazz;
@@ -109,13 +110,55 @@ public abstract class Pierced extends WithFile {
     public void save() {
         writer.init();
 
-        /*
-        Field[] fields = clazz.getDeclaredFields();
-        Arrays.stream(fields)
-                .filter(this::isValid)
-                .forEach();
+        // Type comment(s)
+        if (clazz.isAnnotationPresent(Comment.class))
+            writer.writeTypeComment(clazz.getAnnotation(Comment.class));
+        if (clazz.isAnnotationPresent(Comments.class))
+            writer.writeTypeComments(clazz.getAnnotation(Comments.class));
 
-         */
+        Field[] fields = Arrays.stream(clazz.getDeclaredFields())
+                .filter(this::isValid)
+                .toArray(Field[]::new);
+
+        // Uncategorized fields
+        Arrays.stream(fields)
+                .filter(field -> !isCategorized(field))
+                .forEach(this::saveOnly);
+
+        // Categorized fields
+        Arrays.stream(fields)
+                .filter(this::isCategorized)
+                .collect(Collectors.groupingBy(f -> f.getAnnotation(Table.class)))
+                .forEach((table, categorizedFields) -> {
+                    if (categorizedFields.stream().anyMatch(this::hasValue)) {
+                        writer.writeTable(table);
+                        categorizedFields.stream()
+                                .filter(this::hasValue)
+                                .forEach(this::saveOnly);
+                    }
+                });
+    }
+
+    private void saveOnly(Field field) {
+        field.setAccessible(true);
+        getSerializer(field, field.getType())
+                .ifPresent(serializer -> {
+                    try {
+                        writer.set(field.getName(), field.get(this), serializer);
+                    } catch (IllegalAccessException e) {
+                        addException(ExceptionHandler.handleFieldIllegalAccessException(e, field.getName()));
+                    }
+                });
+
+        // Inline Comment
+        if (field.isAnnotationPresent(InlineComment.class))
+            writer.writeInlineComment(field.getAnnotation(InlineComment.class));
+
+        // Comment(s)
+        if (field.isAnnotationPresent(Comment.class))
+            writer.writeComment(field.getAnnotation(Comment.class));
+        if (field.isAnnotationPresent(Comments.class))
+            writer.writeComments(field.getAnnotation(Comments.class));
     }
 
     private boolean isValid(Field field) {
@@ -123,7 +166,16 @@ public abstract class Pierced extends WithFile {
     }
 
     private boolean isCategorized(Field field) {
-        return !field.isAnnotationPresent(Table.class);
+        return field.isAnnotationPresent(Table.class);
+    }
+
+    private boolean hasValue(Field field) {
+        try {
+            return field.get(this) != null;
+        } catch (IllegalAccessException e) {
+            addException(ExceptionHandler.handleFieldIllegalAccessException(e, field.getName()));
+            return false;
+        }
     }
 
     private String getKey(Field field) {

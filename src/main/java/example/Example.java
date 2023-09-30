@@ -1,6 +1,8 @@
 package example;
 
 import net.krlite.pierced_dev.Pierced;
+import net.krlite.pierced_dev.annotation.Comment;
+import net.krlite.pierced_dev.annotation.InlineComment;
 import net.krlite.pierced_dev.annotation.Table;
 import net.krlite.pierced_dev.ast.io.Reader;
 import net.krlite.pierced_dev.ast.regex.primitive.BasicString;
@@ -19,7 +21,7 @@ public class Example {
         System.out.println();
 
         System.out.println("raw: " + "\\,\",\b,\f,\n,\r,\t,\\u0000,\\U00000000");
-        System.out.println("escaped: " + Util.escape("\\,\",\b,\f,\n,\r,\t,\\u0000,\\U00000000"));
+        System.out.println("escaped: " + Util.escape("\\,\",\b,\f,\n,\r,\t,\\u0000,\\U00000000", true));
 
         System.out.println("=== READ ===");
         Reader reader = new Reader(new File("src/main/java/example/config/example.toml"));
@@ -39,20 +41,28 @@ public class Example {
                 PrimitiveSerializers.getPrimitiveSerializer(Color.class).get()
         ).ifPresent(System.out::println);
 
-        System.out.println("=== LOAD ===");
         Config config = new Config();
+
+        System.out.println("=== LOAD ===");
         config.load();
         System.out.println(config.c);
 
         System.out.println("=== SAVE ===");
+        config.save();
     }
 
+    @Comment("A class")
     public static class Config extends Pierced {
         public Config() {
             super(Config.class, new File("src/main/java/example/config/test.toml"));
         }
 
-        @Table("a . b")
-        public Color c;
+        @Comment("ABC")
+        @InlineComment("INLINE")
+        @Table("a . \"b\"")
+        public Color c = new Color(0x172D8F);
+
+        @Comment("DEF")
+        public double aaa = 2.3;
     }
 }

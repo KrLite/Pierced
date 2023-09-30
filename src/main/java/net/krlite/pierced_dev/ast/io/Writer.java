@@ -3,10 +3,12 @@ package net.krlite.pierced_dev.ast.io;
 import net.krlite.pierced_dev.ExceptionHandler;
 import net.krlite.pierced_dev.WithFile;
 import net.krlite.pierced_dev.annotation.Comments;
+import net.krlite.pierced_dev.annotation.InlineComment;
 import net.krlite.pierced_dev.annotation.Table;
 import net.krlite.pierced_dev.ast.regex.Comment;
 import net.krlite.pierced_dev.ast.regex.NewLine;
 import net.krlite.pierced_dev.ast.util.Util;
+import net.krlite.pierced_dev.serialization.base.Serializer;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -44,41 +46,63 @@ public class Writer extends WithFile {
         }
     }
 
-    private void writeTable(Table table) {
-        if (!table.value().isEmpty())
-            write(Util.formatStdTable(table.value()));
+    public  <T> void set(String rawKey, Object value, Serializer<T> serializer) {
+        if (value == null) return;
+
+        writeKeyValuePair(rawKey, serializer.serialize((T) value), value.getClass());
     }
 
-    private void writeComment(net.krlite.pierced_dev.annotation.Comment comment) {
+    public void writeTable(Table table) {
+        if (!table.value().isEmpty())
+            writeLine(Util.formatStdTable(table.value()));
+    }
+
+    public void writeInlineComment(InlineComment inlineComment) {
+        writeInline(" " + Util.formatComment(inlineComment.value().replaceAll(NewLine.NEWLINE.pattern(), "")));
+    }
+
+    public void writeComment(net.krlite.pierced_dev.annotation.Comment comment) {
         Arrays.stream(comment.value()
                 .replaceFirst("^" + NewLine.NEWLINE.pattern(), "")
                 .split(NewLine.NEWLINE.pattern()))
                 .map(Util::formatComment)
-                .forEach(this::write);
+                .forEach(this::writeLine);
     }
 
-    private void writeComments(Comments comments) {
+    public void writeComments(Comments comments) {
         Arrays.stream(comments.value()).forEach(this::writeComment);
     }
 
-    private void writeTypeComment(net.krlite.pierced_dev.annotation.Comment comment) {
+    public void writeTypeComment(net.krlite.pierced_dev.annotation.Comment comment) {
         if (!Util.isCommentEmpty(comment.value()))
             writeComment(comment);
     }
 
-    private void writeTypeComments(Comments comments) {
+    public void writeTypeComments(Comments comments) {
         if (!Arrays.stream(comments.value())
                 .map(net.krlite.pierced_dev.annotation.Comment::value)
                 .allMatch(Util::isCommentEmpty))
             writeComments(comments);
     }
 
-    private void write(String key, String value) {
+    private void writeKeyValuePair(String key, String value, Class<?> clazz) {
         if (!key.isEmpty())
-            write(Util.formatLine(key, value));
+            writeLine(Util.formatLine(key, value, clazz));
     }
 
-    private void write(String line) {
+    private void writeInline(String inline) {
+        FileWriter writer;
+        try {
+            writer = new FileWriter(file(), true);
+        } catch (IOException e) {
+            addException(ExceptionHandler.handleFileWriterCreateException(e));
+            return;
+        }
+
+        writeAndClose(writer, inline);
+    }
+
+    private void writeLine(String line) {
         FileWriter writer;
         try {
             writer = new FileWriter(file(), true);

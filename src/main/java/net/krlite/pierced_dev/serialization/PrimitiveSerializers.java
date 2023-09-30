@@ -80,12 +80,18 @@ public class PrimitiveSerializers {
 
     public static Optional<Color> parseColor(String value) {
         return PrimitiveSerializers.parseLong(value)
-                .map(String::valueOf)
-                .map(Color::decode);
+                .map(longValue -> {
+                    int a = (int) ((longValue & 0xFF000000L) >> 24);
+                    int r = (int) ((longValue & 0xFF0000) >> 16);
+                    int g = (int) ((longValue & 0xFF00) >> 8);
+                    int b = (int) (longValue & 0xFF);
+
+                    return new Color(r, g, b, a);
+                });
     }
 
     public static String formatColor(Color color) {
-        return String.format("#%06X", color.getRGB());
+        return String.format("0x%08X", color.getRGB());
     }
 
     public static <T> Optional<Serializer<T>> getPrimitiveSerializer(Class<T> tClass) {

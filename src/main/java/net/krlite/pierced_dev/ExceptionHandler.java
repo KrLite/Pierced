@@ -42,4 +42,8 @@ public class ExceptionHandler {
     public static Exception handleFileWriterCloseException(Throwable e) {
         return new IOException("Cannot close file writer!", e);
     }
+
+    public static Exception handleFieldIllegalAccessException(Throwable e, String fieldName) {
+        return new RuntimeException("Cannot access field '" + fieldName + "'!", e);
+    }
 }

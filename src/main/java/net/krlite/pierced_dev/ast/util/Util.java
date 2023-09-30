@@ -5,6 +5,7 @@ import net.krlite.pierced_dev.ast.regex.key.Key;
 import net.krlite.pierced_dev.ast.regex.key.Table;
 import net.krlite.pierced_dev.ast.regex.primitive.BasicString;
 import net.krlite.pierced_dev.ast.regex.primitive.LiteralString;
+import net.krlite.pierced_dev.ast.regex.primitive.Primitive;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -149,16 +150,22 @@ public class Util {
         return raw;
     }
 
-    public static String formatLine(String rawKey, String rawValue) {
-        rawKey = flatten(normalizeKey(rawKey), false);
-        return formatKey(rawKey) + " = " + "\"" + formatValue(rawValue) + "\"";
+    public static String formatLine(String rawKey, String rawValue, Class<?> clazz) {
+        rawKey = formatKey(flatten(normalizeKey(rawKey), false));
+
+        if (clazz == String.class)
+            rawValue = formatStringValue(rawValue);
+        if (clazz == Character.class || clazz == char.class)
+            rawValue = formatCharValue(rawValue);
+
+        return rawKey + " = " + rawValue;
     }
 
     private static String formatKey(String rawKey) {
-        return "\"" + escape(rawKey, true) + "\"";
+        return escape(rawKey, true);
     }
 
-    private static String formatValue(String rawValue) {
+    private static String formatStringValue(String rawValue) {
         Matcher newLineMatcher = NewLine.NEWLINE.matcher(rawValue);
         boolean newLineFound = newLineMatcher.find();
 
@@ -166,6 +173,10 @@ public class Util {
             return "\"\"\"" + LINE_TERMINATOR + escape(rawValue, false) + "\"\"\"";
 
         else return "\"" + escape(rawValue, true) + "\"";
+    }
+
+    private static String formatCharValue(String rawValue) {
+        return "'" + rawValue + "'";
     }
 
     public static String formatStdTable(String rawStdTable) {

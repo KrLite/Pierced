@@ -13,9 +13,9 @@ public class Primitive extends ABNF {
     );
 
     public static final Pattern PRIMITIVE = or(
-            STRING,
             Boolean.BOOLEAN,
+            Integer.INTEGER,
             Float.FLOAT,
-            Integer.INTEGER
+            STRING
     );
 }

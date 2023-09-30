@@ -1,1 +1,8 @@
-a . b. c = 0xFF_FF_FF
+# A class
+
+aaa = 500.0
+# DEF
+
+[a."b"]
+c = 0xFF172D8F # INLINE
+# ABC
