@@ -2,9 +2,7 @@ package net.krlite.pierced_dev.ast.io;
 
 import net.krlite.pierced_dev.ExceptionHandler;
 import net.krlite.pierced_dev.WithFile;
-import net.krlite.pierced_dev.annotation.Comments;
-import net.krlite.pierced_dev.annotation.InlineComment;
-import net.krlite.pierced_dev.annotation.Table;
+import net.krlite.pierced_dev.annotation.*;
 import net.krlite.pierced_dev.ast.regex.Comment;
 import net.krlite.pierced_dev.ast.regex.NewLine;
 import net.krlite.pierced_dev.ast.util.Util;
@@ -13,10 +11,16 @@ import net.krlite.pierced_dev.serialization.base.Serializer;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 public class Writer extends WithFile {
+    private boolean isFirstLine = true, isLastLineComment = false, shouldInsertNewLine = false;
+
     public Writer(File file) {
         super(file);
     }
@@ -27,6 +31,7 @@ public class Writer extends WithFile {
     }
 
     public void init() {
+        // Init file
         if (!file().exists()) {
             try {
                 // Create file
@@ -44,6 +49,10 @@ public class Writer extends WithFile {
                 addException(e);
             }
         }
+
+        // Init properties
+        isFirstLine = true;
+        isLastLineComment = false;
     }
 
     public  <T> void set(String rawKey, Object value, Serializer<T> serializer) {
@@ -52,42 +61,59 @@ public class Writer extends WithFile {
         writeKeyValuePair(rawKey, serializer.serialize((T) value), value.getClass());
     }
 
-    public void writeTable(Table table) {
-        if (!table.value().isEmpty())
-            writeLine(Util.formatStdTable(table.value()));
-    }
-
-    public void writeInlineComment(InlineComment inlineComment) {
-        writeInline(" " + Util.formatComment(inlineComment.value().replaceAll(NewLine.NEWLINE.pattern(), "")));
-    }
-
-    public void writeComment(net.krlite.pierced_dev.annotation.Comment comment) {
-        Arrays.stream(comment.value()
-                .replaceFirst("^" + NewLine.NEWLINE.pattern(), "")
-                .split(NewLine.NEWLINE.pattern()))
-                .map(Util::formatComment)
-                .forEach(this::writeLine);
-    }
-
-    public void writeComments(Comments comments) {
-        Arrays.stream(comments.value()).forEach(this::writeComment);
-    }
-
-    public void writeTypeComment(net.krlite.pierced_dev.annotation.Comment comment) {
-        if (!Util.isCommentEmpty(comment.value()))
-            writeComment(comment);
-    }
-
-    public void writeTypeComments(Comments comments) {
-        if (!Arrays.stream(comments.value())
-                .map(net.krlite.pierced_dev.annotation.Comment::value)
-                .allMatch(Util::isCommentEmpty))
-            writeComments(comments);
-    }
-
     private void writeKeyValuePair(String key, String value, Class<?> clazz) {
         if (!key.isEmpty())
             writeLine(Util.formatLine(key, value, clazz));
+    }
+
+    private void writeComments(String... comments) {
+        if (Arrays.stream(comments)
+                .allMatch(Util::isCommentEmpty)) return;
+
+        Arrays.stream(comments).forEach(comment ->
+                Arrays.stream(comment.split(NewLine.NEWLINE.pattern()))
+                        .map(Util::formatComment)
+                        .forEach(this::writeLine)
+        );
+    }
+
+    public void writeComments(AnnotatedElement element, boolean shouldAppendNewLine) {
+        if (element.isAnnotationPresent(net.krlite.pierced_dev.annotation.Comment.class))
+            writeComments(element.getAnnotation(net.krlite.pierced_dev.annotation.Comment.class).value());
+
+        if (element.isAnnotationPresent(Comments.class))
+            writeComments(Arrays.stream(element.getAnnotation(Comments.class).value())
+                    .map(net.krlite.pierced_dev.annotation.Comment::value)
+                    .toArray(String[]::new));
+
+        shouldInsertNewLine = shouldAppendNewLine;
+    }
+
+    public void writeTableComments(AnnotatedElement element, Table table) {
+        TableComment[] tableComments = new TableComment[]{};
+
+        if (element.isAnnotationPresent(TableComment.class))
+            tableComments = new TableComment[]{element.getAnnotation(TableComment.class)};
+        if (element.isAnnotationPresent(TableComments.class))
+            tableComments = element.getAnnotation(TableComments.class).value();
+
+        writeComments(Arrays.stream(tableComments)
+                .filter(tableComment ->
+                        Util.flatten(Util.unescape(Util.normalizeStdTable(tableComment.table())), true)
+                                .equals(Util.flatten(Util.unescape(Util.normalizeStdTable(table.value())), true)))
+                .map(TableComment::comment)
+                .toArray(String[]::new));
+    }
+
+    public void writeInlineComment(AnnotatedElement element) {
+        if (element.isAnnotationPresent(InlineComment.class))
+            writeInline(" " + Util.formatComment(element.getAnnotation(InlineComment.class).value()
+                    .replaceAll(NewLine.NEWLINE.pattern(), "")));
+    }
+
+    public void writeTable(Table table) {
+        if (!table.value().isEmpty())
+            writeLine(Util.formatStdTable(table.value()));
     }
 
     private void writeInline(String inline) {
@@ -111,25 +137,40 @@ public class Writer extends WithFile {
             return;
         }
 
-        Matcher commentMatcher = Comment.COMMENT.matcher(line);
-        boolean commentMatched = commentMatcher.matches();
+        writeSurroundingNewLines: {
+            // Write new line if not first line
+            if (!isFirstLine) writeNewLine(writer);
 
-        writeNewLinesAroundComment(writer, !commentMatched && !line.isEmpty());
+            // Insert new line
+            if (shouldInsertNewLine) writeNewLine(writer);
 
-        commentShouldAppendNewLine = commentMatched;
+            // Write new lines before standard tables
+            {
+                Matcher stdTableMatcher = net.krlite.pierced_dev.ast.regex.key.Table.STD_TABLE.matcher(line);
+                boolean stdTableMatched = stdTableMatcher.matches();
+
+                if (!isFirstLine && !isLastLineComment && stdTableMatched) {
+                    writeNewLine(writer);
+                }
+            }
+
+            // Write new lines before comments
+            {
+                Matcher commentMatcher = Comment.COMMENT.matcher(line);
+                boolean commentMatched = commentMatcher.matches();
+
+                if (!isFirstLine && !isLastLineComment && commentMatched) {
+                    writeNewLine(writer);
+                }
+
+                isLastLineComment = commentMatched;
+            }
+
+            isFirstLine = false;
+        }
+
+        // Write line
         writeAndClose(writer, line);
-    }
-
-    private boolean commentShouldAppendNewLine = false, commentShouldPrependNewLine = false;
-
-    private void writeNewLinesAroundComment(java.io.Writer writer, boolean shouldAppendNewLine) {
-        if (commentShouldPrependNewLine) {
-            writeNewLine(writer);
-
-            if ((commentShouldAppendNewLine && shouldAppendNewLine))
-                writeNewLine(writer);
-
-        } else commentShouldPrependNewLine = true;
     }
 
     private void writeNewLine(java.io.Writer writer) {

@@ -4,6 +4,7 @@ import net.krlite.pierced_dev.Pierced;
 import net.krlite.pierced_dev.annotation.Comment;
 import net.krlite.pierced_dev.annotation.InlineComment;
 import net.krlite.pierced_dev.annotation.Table;
+import net.krlite.pierced_dev.annotation.TableComment;
 import net.krlite.pierced_dev.ast.io.Reader;
 import net.krlite.pierced_dev.ast.regex.NewLine;
 import net.krlite.pierced_dev.ast.regex.Whitespace;
@@ -80,7 +81,6 @@ public class Example {
 
          */
 
-        /*
         Config config = new Config();
 
         System.out.println("=== LOAD ===");
@@ -89,11 +89,13 @@ public class Example {
 
         System.out.println("=== SAVE ===");
         config.save();
-
-         */
     }
 
     @Comment("A class")
+    @Comment("B")
+    @Comment("C")
+    @TableComment(table = "a.\"b\"", comment = "This is a table comment")
+    @TableComment(table = "a.\"b\"", comment = "This is another table comment")
     public static class Config extends Pierced {
         public Config() {
             super(Config.class, new File("src/main/java/example/config/test.toml"));

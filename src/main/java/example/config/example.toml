@@ -6,7 +6,7 @@ A \
 string"""
 # Should be "A multiline string"
 
-a_literal_string = 'Literal string'
+a_literal_string = '# Literal string'
 
 [cat]
 a_boolean = true

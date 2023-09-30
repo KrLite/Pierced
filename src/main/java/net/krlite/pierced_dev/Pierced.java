@@ -10,7 +10,6 @@ import net.krlite.pierced_dev.serialization.base.Serializer;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
@@ -111,10 +110,7 @@ public abstract class Pierced extends WithFile {
         writer.init();
 
         // Type comment(s)
-        if (clazz.isAnnotationPresent(Comment.class))
-            writer.writeTypeComment(clazz.getAnnotation(Comment.class));
-        if (clazz.isAnnotationPresent(Comments.class))
-            writer.writeTypeComments(clazz.getAnnotation(Comments.class));
+        writer.writeComments(clazz, true);
 
         Field[] fields = Arrays.stream(clazz.getDeclaredFields())
                 .filter(this::isValid)
@@ -131,7 +127,9 @@ public abstract class Pierced extends WithFile {
                 .collect(Collectors.groupingBy(f -> f.getAnnotation(Table.class)))
                 .forEach((table, categorizedFields) -> {
                     if (categorizedFields.stream().anyMatch(this::hasValue)) {
+                        writer.writeTableComments(clazz, table);
                         writer.writeTable(table);
+
                         categorizedFields.stream()
                                 .filter(this::hasValue)
                                 .forEach(this::saveOnly);
@@ -140,6 +138,10 @@ public abstract class Pierced extends WithFile {
     }
 
     private void saveOnly(Field field) {
+        // Comment(s)
+        writer.writeComments(field, false);
+
+        // Key value pair
         field.setAccessible(true);
         getSerializer(field, field.getType())
                 .ifPresent(serializer -> {
@@ -151,14 +153,7 @@ public abstract class Pierced extends WithFile {
                 });
 
         // Inline Comment
-        if (field.isAnnotationPresent(InlineComment.class))
-            writer.writeInlineComment(field.getAnnotation(InlineComment.class));
-
-        // Comment(s)
-        if (field.isAnnotationPresent(Comment.class))
-            writer.writeComment(field.getAnnotation(Comment.class));
-        if (field.isAnnotationPresent(Comments.class))
-            writer.writeComments(field.getAnnotation(Comments.class));
+        writer.writeInlineComment(field);
     }
 
     private boolean isValid(Field field) {

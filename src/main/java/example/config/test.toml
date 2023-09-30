@@ -1,8 +1,13 @@
 # A class
+# B
+# C
 
-aaa = 500.0
 # DEF
+aaa = 500.0
 
+# This is a table comment
+# This is another table comment
 [a."b"]
-c = 0xFF172D8F # INLINE
+
 # ABC
+c = 0xFF172D8F # INLINE
