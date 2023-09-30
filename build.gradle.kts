@@ -14,7 +14,8 @@ base {
 sourceSets {
     main {
         java {
-            //exclude("example/**")
+            // exclude("example/**")
+            // exclude("net/krlite/pierced/**")
         }
     }
 }
