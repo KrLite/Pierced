@@ -2,12 +2,16 @@ package net.krlite.pierced_dev.ast.io;
 
 import net.krlite.pierced_dev.ExceptionHandler;
 import net.krlite.pierced_dev.WithFile;
+import net.krlite.pierced_dev.annotation.Comments;
+import net.krlite.pierced_dev.annotation.Table;
 import net.krlite.pierced_dev.ast.regex.Comment;
+import net.krlite.pierced_dev.ast.regex.NewLine;
 import net.krlite.pierced_dev.ast.util.Util;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 
 public class Writer extends WithFile {
@@ -40,8 +44,38 @@ public class Writer extends WithFile {
         }
     }
 
+    private void writeTable(Table table) {
+        if (!table.value().isEmpty())
+            write(Util.formatStdTable(table.value()));
+    }
+
+    private void writeComment(net.krlite.pierced_dev.annotation.Comment comment) {
+        Arrays.stream(comment.value()
+                .replaceFirst("^" + NewLine.NEWLINE.pattern(), "")
+                .split(NewLine.NEWLINE.pattern()))
+                .map(Util::formatComment)
+                .forEach(this::write);
+    }
+
+    private void writeComments(Comments comments) {
+        Arrays.stream(comments.value()).forEach(this::writeComment);
+    }
+
+    private void writeTypeComment(net.krlite.pierced_dev.annotation.Comment comment) {
+        if (!Util.isCommentEmpty(comment.value()))
+            writeComment(comment);
+    }
+
+    private void writeTypeComments(Comments comments) {
+        if (!Arrays.stream(comments.value())
+                .map(net.krlite.pierced_dev.annotation.Comment::value)
+                .allMatch(Util::isCommentEmpty))
+            writeComments(comments);
+    }
+
     private void write(String key, String value) {
-        write(Util.formatLine(key, value));
+        if (!key.isEmpty())
+            write(Util.formatLine(key, value));
     }
 
     private void write(String line) {

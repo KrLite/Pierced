@@ -151,7 +151,7 @@ public class Util {
 
     public static String formatLine(String rawKey, String rawValue) {
         rawKey = flatten(normalizeKey(rawKey), false);
-        return formatKey(rawKey) + " = " + "\"" + escape(rawValue, true) + "\"";
+        return formatKey(rawKey) + " = " + "\"" + formatValue(rawValue) + "\"";
     }
 
     private static String formatKey(String rawKey) {
@@ -166,5 +166,17 @@ public class Util {
             return "\"\"\"" + LINE_TERMINATOR + escape(rawValue, false) + "\"\"\"";
 
         else return "\"" + escape(rawValue, true) + "\"";
+    }
+
+    public static String formatStdTable(String rawStdTable) {
+        return "[" + normalizeKey(rawStdTable) + "]";
+    }
+
+    public static String formatComment(String rawComment) {
+        return isCommentEmpty(rawComment) ? "" : "# " + rawComment.replaceAll(NewLine.NEWLINE.pattern(), "");
+    }
+
+    public static boolean isCommentEmpty(String rawComment) {
+        return rawComment.replaceAll(NewLine.NEWLINE.pattern(), "").isEmpty();
     }
 }
