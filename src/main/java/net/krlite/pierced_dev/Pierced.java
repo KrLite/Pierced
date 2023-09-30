@@ -65,7 +65,7 @@ public abstract class Pierced extends WithFile {
             Field field = clazz.getField(fieldName);
             serializers.put(field, serializer);
         } catch (NoSuchFieldException e) {
-            addException(new RuntimeException("Field '" + fieldName + "' does not exist:", e));
+            addException(ExceptionHandler.handleFieldDoesNotExistException(e, fieldName));
         }
     }
 
@@ -74,7 +74,7 @@ public abstract class Pierced extends WithFile {
             Field field = clazz.getField(fieldName);
             serializers.remove(field);
         } catch (NoSuchFieldException e) {
-            addException(new RuntimeException("Field '" + fieldName + "' does not exist:", e));
+            addException(ExceptionHandler.handleFieldDoesNotExistException(e, fieldName));
         }
     }
 
@@ -82,19 +82,48 @@ public abstract class Pierced extends WithFile {
         Field[] fields = clazz.getDeclaredFields();
         Arrays.stream(fields)
                 .filter(this::isValid)
-                .forEach(field -> getSerializer(field, field.getType())
-                        .flatMap(serializer -> reader.get(getKey(field), serializer))
-                        .ifPresent(value -> {
-                            try {
-                                field.set(this, value);
-                            } catch (IllegalAccessException e) {
-                                addException(new RuntimeException("Cannot set field '" + field.getName() + "':", e));
-                            }
-                        }));
+                .forEach(this::loadOnly);
+    }
+
+    public void loadOnly(String fieldName) {
+        try {
+            Field field = clazz.getField(fieldName);
+            loadOnly(field);
+        } catch (NoSuchFieldException e) {
+            addException(ExceptionHandler.handleFindFieldException(e, fieldName));
+        }
+    }
+
+    private void loadOnly(Field field) {
+        getSerializer(field, field.getType())
+                .flatMap(serializer -> reader.get(getKey(field), serializer))
+                .ifPresent(value -> {
+                    try {
+                        field.set(this, value);
+                    } catch (IllegalAccessException e) {
+                        addException(ExceptionHandler.handleSetFieldException(e, field.getName()));
+                    }
+                });
+    }
+
+    public void save() {
+        writer.init();
+
+        /*
+        Field[] fields = clazz.getDeclaredFields();
+        Arrays.stream(fields)
+                .filter(this::isValid)
+                .forEach();
+
+         */
     }
 
     private boolean isValid(Field field) {
         return !field.isAnnotationPresent(Silent.class);
+    }
+
+    private boolean isCategorized(Field field) {
+        return !field.isAnnotationPresent(Table.class);
     }
 
     private String getKey(Field field) {

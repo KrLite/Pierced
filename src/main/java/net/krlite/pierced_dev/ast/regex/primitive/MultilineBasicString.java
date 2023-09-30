@@ -2,7 +2,7 @@ package net.krlite.pierced_dev.ast.regex.primitive;
 
 import net.krlite.pierced_dev.ast.regex.ABNF;
 import net.krlite.pierced_dev.ast.regex.Comment;
-import net.krlite.pierced_dev.ast.regex.Newline;
+import net.krlite.pierced_dev.ast.regex.NewLine;
 import net.krlite.pierced_dev.ast.regex.Whitespace;
 
 import java.util.regex.Pattern;
@@ -17,16 +17,16 @@ public class MultilineBasicString extends ABNF {
 	public static final Pattern MLB_ESCAPED_NL = chain(
 			BasicString.ESCAPE,
 			Whitespace.WS,
-			Newline.NEWLINE,
+			NewLine.NEWLINE,
 			repeats(or(
 					Whitespace.WSCHAR,
-					Newline.NEWLINE
+					NewLine.NEWLINE
 			))
 	);
 	public static final Pattern MLB_CHAR = or(MLB_UNESCAPED, BasicString.ESCAPED);
 	public static final Pattern MLB_CONTENT = or(
 			MLB_CHAR,
-			Newline.NEWLINE,
+			NewLine.NEWLINE,
 			MLB_ESCAPED_NL
 	);
 
@@ -41,7 +41,7 @@ public class MultilineBasicString extends ABNF {
 	public static final Pattern ML_BASIC_STRING_DELIM = repeats(BasicString.QUOTATION_MARK, 3);
 	public static final Pattern ML_BASIC_STRING = chain(
 			ML_BASIC_STRING_DELIM,
-			optional(Newline.NEWLINE),
+			optional(NewLine.NEWLINE),
 			ML_BASIC_BODY,
 			ML_BASIC_STRING_DELIM
 	);

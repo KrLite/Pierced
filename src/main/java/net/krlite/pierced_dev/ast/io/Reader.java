@@ -1,5 +1,6 @@
 package net.krlite.pierced_dev.ast.io;
 
+import net.krlite.pierced_dev.ExceptionHandler;
 import net.krlite.pierced_dev.WithFile;
 import net.krlite.pierced_dev.ast.regex.key.Key;
 import net.krlite.pierced_dev.ast.regex.key.Table;
@@ -28,7 +29,7 @@ public class Reader extends WithFile {
 		try {
 			fis = new FileInputStream(file());
 		} catch (FileNotFoundException e) {
-			addException(new IOException("File '" + file().getName() + "' does not exist"));
+			addException(ExceptionHandler.handleFileDoesNotExistException(e, file().getName()));
 			return Optional.empty();
 		}
 
@@ -47,7 +48,7 @@ public class Reader extends WithFile {
 			try {
 				if ((line = bufferedReader.get().readLine()) == null) break;
 			} catch (IOException e) {
-				addException(e);
+				addException(ExceptionHandler.handleBufferReaderReadLineException(e));
 				break;
 			}
 			Matcher matcher = Pattern.compile("").matcher(line);
@@ -105,7 +106,7 @@ public class Reader extends WithFile {
 		try {
 			bufferedReader.get().close();
 		} catch (IOException e) {
-			addException(e);
+			addException(ExceptionHandler.handleBufferReaderCloseException(e));
 		}
 		return Optional.empty();
 	}

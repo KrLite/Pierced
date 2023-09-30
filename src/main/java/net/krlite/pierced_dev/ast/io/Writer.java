@@ -1,6 +1,6 @@
 package net.krlite.pierced_dev.ast.io;
 
-import net.krlite.pierced.io.toml.TomlRegex;
+import net.krlite.pierced_dev.ExceptionHandler;
 import net.krlite.pierced_dev.WithFile;
 import net.krlite.pierced_dev.ast.regex.Comment;
 import net.krlite.pierced_dev.ast.util.Util;
@@ -20,9 +20,10 @@ public class Writer extends WithFile {
         return super.file();
     }
 
-    private void init() {
+    public void init() {
         if (!file().exists()) {
             try {
+                // Create file
                 file().getParentFile().mkdirs();
                 file().createNewFile();
             } catch (IOException e) {
@@ -30,7 +31,8 @@ public class Writer extends WithFile {
             }
         } else {
             try {
-                FileWriter writer = new FileWriter(file());
+                // Clear content
+                FileWriter writer = new FileWriter(file(), false);
                 writeAndClose(writer, "");
             } catch (IOException e) {
                 addException(e);
@@ -38,34 +40,65 @@ public class Writer extends WithFile {
         }
     }
 
-    private boolean separate = false, ready = false;
+    private void write(String key, String value) {
+        write(Util.formatLine(key, value));
+    }
 
-    private void write(String line) throws IOException {
-        FileWriter writer = new FileWriter(file(), true);
+    private void write(String line) {
+        FileWriter writer;
+        try {
+            writer = new FileWriter(file(), true);
+        } catch (IOException e) {
+            addException(ExceptionHandler.handleFileWriterCreateException(e));
+            return;
+        }
+
         Matcher commentMatcher = Comment.COMMENT.matcher(line);
         boolean commentMatched = commentMatcher.matches();
 
-        if (ready) {
-            writer.write(Util.NEWLINE);
-            if ((separate && !commentMatched && !line.isEmpty()))
-                writer.write(Util.NEWLINE);
-        } else ready = true;
+        writeNewLinesAroundComment(writer, !commentMatched && !line.isEmpty());
 
-        separate = commentMatched;
+        commentShouldAppendNewLine = commentMatched;
         writeAndClose(writer, line);
     }
 
-    private void write(String key, String value) {
+    private boolean commentShouldAppendNewLine = false, commentShouldPrependNewLine = false;
+
+    private void writeNewLinesAroundComment(java.io.Writer writer, boolean shouldAppendNewLine) {
+        if (commentShouldPrependNewLine) {
+            writeNewLine(writer);
+
+            if ((commentShouldAppendNewLine && shouldAppendNewLine))
+                writeNewLine(writer);
+
+        } else commentShouldPrependNewLine = true;
+    }
+
+    private void writeNewLine(java.io.Writer writer) {
         try {
-            write(key + " = " + value);
+            writer.write(Util.LINE_TERMINATOR);
         } catch (IOException e) {
-            addException(e);
+            addException(ExceptionHandler.handleFileWriterWriteException(e));
         }
     }
 
-    private void writeAndClose(java.io.Writer writer, String content) throws IOException {
-        writer.write(content);
-        writer.flush();
-        writer.close();
+    private void writeAndClose(java.io.Writer writer, String content) {
+        try {
+            writer.write(content);
+        } catch (IOException e) {
+            addException(ExceptionHandler.handleFileWriterWriteException(e));
+        }
+
+        try {
+            writer.flush();
+        } catch (IOException e) {
+            addException(ExceptionHandler.handleFileWriterFlushException(e));
+        }
+
+        try {
+            writer.close();
+        } catch (IOException e) {
+            addException(ExceptionHandler.handleFileWriterCloseException(e));
+        }
     }
 }

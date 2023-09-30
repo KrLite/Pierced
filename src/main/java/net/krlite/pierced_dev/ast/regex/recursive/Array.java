@@ -13,7 +13,7 @@ public class Array<C> extends ABNF {
 			Whitespace.WSCHAR,
 			chain(
 					optional(Comment.COMMENT),
-					Newline.NEWLINE
+					NewLine.NEWLINE
 			)
 	));
 }
