@@ -10,13 +10,13 @@
 
 **Pierced** is a lightweight Java library which handles basic **[TOML](https://toml.io)** configuration files.
 
-## Gradle
+## Implementation
 
 <details>
 
-<summary>Groovy</summary>
+<summary>Using <b>Groovy</b></summary>
 
-<h6 align=right>build.gradle</h6>
+<h6 align="right">build.gradle</h6>
 
 ```groovy
 repositories {
@@ -28,7 +28,7 @@ dependencies {
 }
 ```
 
-<h6 align=right>gradle.properties</h6>
+<h6 align="right">gradle.properties</h6>
 
 ```
 pierced_version=?
@@ -41,9 +41,9 @@ pierced_version=?
 
 <details>
 
-<summary>Kotlin</summary>
+<summary>Using <b>Kotlin</b></summary>
 
-<h6 align=right>build.gradle.kts</h6>
+<h6 align="right">build.gradle.kts</h6>
 
 ```kotlin
 repositories {
@@ -57,7 +57,7 @@ dependencies {
 }
 ```
 
-<h6 align=right>gradle.properties</h6>
+<h6 align="right">gradle.properties</h6>
 
 ```
 piercedVersion=?
@@ -68,7 +68,7 @@ piercedVersion=?
 
 </details>
 
-Once implemented, extend `Pierced`[^pierced_classpath] class and add your own configuration fields.
+Once implemented, extend [`Pierced ↗`](src/main/java/net/krlite/pierced/config/Pierced.java)[^pierced_classpath] class and add your own configuration fields.
 
 [^pierced_classpath]: `net.krlite.pierced.config.Pierced`
 
