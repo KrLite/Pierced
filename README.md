@@ -16,7 +16,8 @@
 
 <summary>Groovy</summary>
 
-###### <p align=right>build.gradle</p>
+<h6 align=right>build.gradle</h6>
+
 ```groovy
 repositories {
 	maven { url "https://jitpack.io" }
@@ -27,7 +28,8 @@ dependencies {
 }
 ```
 
-###### <p align=right>gradle.properties</p>
+<h6 align=right>gradle.properties</h6>
+
 ```
 pierced_version=?
 ```
@@ -41,7 +43,8 @@ pierced_version=?
 
 <summary>Kotlin</summary>
 
-###### <p align=right>build.gradle.kts</p>
+<h6 align=right>build.gradle.kts</h6>
+
 ```kotlin
 repositories {
 	maven("https://jitpack.io")
@@ -54,7 +57,8 @@ dependencies {
 }
 ```
 
-###### <p align=right>gradle.properties</p>
+<h6 align=right>gradle.properties</h6>
+
 ```
 piercedVersion=?
 ```
