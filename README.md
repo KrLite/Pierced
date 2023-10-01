@@ -35,7 +35,7 @@ pierced_version=?
 ```
 
 > [!NOTE]
-> Replace `?` with the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced**.
+> Replace `?` with the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced.**
 
 </details>
 
@@ -64,7 +64,7 @@ piercedVersion=?
 ```
 
 > [!NOTE]
-> Replace `?` with the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced**.
+> Replace `?` with the latest [`tag name`](https://github.com/KrLite/Pierced/tags) of **Pierced.**
 
 </details>
 
