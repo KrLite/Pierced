@@ -1,8 +1,8 @@
 ### <p align=right>[`→` JitPack](https://jitpack.io/#KrLite/Pierced)</p>
 
 <picture>
-	<source media="(prefers-color-scheme: dark)" srcset="/artwork/banner-dim.png?raw=true"/>
-	<img src="/artwork/banner-bright.png?raw=true"/>
+	<source media="(prefers-color-scheme: dark)" srcset="https://github.com/KrLite/Pierced/blob/artwork/banner-dim.png?raw=true"/>
+	<img src="https://github.com/KrLite/Pierced/blob/artwork/banner-bright.png?raw=true"/>
 </picture>
 
 <br/>
