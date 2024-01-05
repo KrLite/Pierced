@@ -9,7 +9,6 @@ import net.krlite.pierced_dev.serialization.base.Serializer;
 import java.awt.*;
 import java.util.Optional;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PrimitiveSerializers {
     public static final Serializer<String> STRING = Serializer.build(PrimitiveSerializers::parseString);
@@ -132,7 +131,7 @@ public class PrimitiveSerializers {
         return String.format("0x%08X", color.getRGB());
     }
 
-    public static <T> Optional<Serializer<T>> getPrimitiveSerializer(Class<T> tClass) {
+    public static <T> Optional<Serializer<T>> getSerializer(Class<T> tClass) {
         if (tClass == String.class)
             return Optional.of((Serializer<T>) STRING);
 

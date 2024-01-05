@@ -6,11 +6,6 @@ import net.krlite.pierced_dev.annotation.InlineComment;
 import net.krlite.pierced_dev.annotation.Table;
 import net.krlite.pierced_dev.annotation.TableComment;
 import net.krlite.pierced_dev.ast.io.Reader;
-import net.krlite.pierced_dev.ast.regex.NewLine;
-import net.krlite.pierced_dev.ast.regex.Whitespace;
-import net.krlite.pierced_dev.ast.regex.primitive.BasicString;
-import net.krlite.pierced_dev.ast.regex.primitive.MultilineBasicString;
-import net.krlite.pierced_dev.ast.util.Util;
 import net.krlite.pierced_dev.serialization.PrimitiveSerializers;
 
 import java.awt.*;
@@ -35,32 +30,32 @@ public class Example {
 
         reader.get(
                 "a_string",
-                PrimitiveSerializers.getPrimitiveSerializer(String.class).get()
+                PrimitiveSerializers.getSerializer(String.class).get()
         ).ifPresent(System.out::println);
 
         reader.get(
                 "a_multiline_string",
-                PrimitiveSerializers.getPrimitiveSerializer(String.class).get()
+                PrimitiveSerializers.getSerializer(String.class).get()
         ).ifPresent(System.out::println);
 
         reader.get(
                 "a_literal_string",
-                PrimitiveSerializers.getPrimitiveSerializer(String.class).get()
+                PrimitiveSerializers.getSerializer(String.class).get()
         ).ifPresent(System.out::println);
 
         reader.get(
                 "cat.a_boolean",
-                PrimitiveSerializers.getPrimitiveSerializer(Boolean.class).get()
+                PrimitiveSerializers.getSerializer(Boolean.class).get()
         ).ifPresent(System.out::println);
 
         reader.get(
                 "cat.a_nan",
-                PrimitiveSerializers.getPrimitiveSerializer(Double.class).get()
+                PrimitiveSerializers.getSerializer(Double.class).get()
         ).ifPresent(System.out::println);
 
         reader.get(
                 "an_infinity",
-                PrimitiveSerializers.getPrimitiveSerializer(Double.class).get()
+                PrimitiveSerializers.getSerializer(Double.class).get()
         ).ifPresent(System.out::println);
 
         /*

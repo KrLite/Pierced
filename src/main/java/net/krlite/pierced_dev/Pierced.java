@@ -49,15 +49,20 @@ public abstract class Pierced extends WithFile {
     private <S> Optional<Serializer<S>> getSerializer(Field field, Class<S> sClass) {
         if (Serializer.class.isAssignableFrom(clazz)) {
             try {
-                return (Optional<Serializer<S>>) field.get(this);
+                return Optional.ofNullable((Serializer<S>) field.get(this));
             } catch (IllegalAccessException e) {
                 addException(new RuntimeException(e));
             }
         }
 
-        return Optional.ofNullable(RecursiveSerializers.getRecursiveSerializer(sClass)
-                .orElse(PrimitiveSerializers.getPrimitiveSerializer(sClass)
-                        .orElse((Serializer<S>) serializers.get(field))));
+        Optional<Serializer<S>>
+                registeredSerializer =  Optional.ofNullable((Serializer<S>) serializers.get(field)),
+                recursiveSerializer = RecursiveSerializers.getSerializer(sClass),
+                primitiveSerializer = PrimitiveSerializers.getSerializer(sClass);
+
+        if (registeredSerializer.isPresent()) return registeredSerializer;
+        if (recursiveSerializer.isPresent()) return recursiveSerializer;
+        return primitiveSerializer;
     }
 
     protected <S> void registerSerializerFor(String fieldName, Serializer<S> serializer) {
@@ -82,19 +87,19 @@ public abstract class Pierced extends WithFile {
         Field[] fields = clazz.getDeclaredFields();
         Arrays.stream(fields)
                 .filter(this::isValid)
-                .forEach(this::loadOnly);
+                .forEach(this::load);
     }
 
-    public void loadOnly(String fieldName) {
+    public void load(String fieldName) {
         try {
             Field field = clazz.getField(fieldName);
-            loadOnly(field);
+            load(field);
         } catch (NoSuchFieldException e) {
             addException(ExceptionHandler.handleFindFieldException(e, fieldName));
         }
     }
 
-    private void loadOnly(Field field) {
+    private void load(Field field) {
         getSerializer(field, field.getType())
                 .flatMap(serializer -> reader.get(getKey(field), serializer))
                 .ifPresent(value -> {
@@ -119,7 +124,7 @@ public abstract class Pierced extends WithFile {
         // Uncategorized fields
         Arrays.stream(fields)
                 .filter(field -> !isCategorized(field))
-                .forEach(this::saveOnly);
+                .forEach(this::save);
 
         // Categorized fields
         Arrays.stream(fields)
@@ -132,12 +137,12 @@ public abstract class Pierced extends WithFile {
 
                         categorizedFields.stream()
                                 .filter(this::hasValue)
-                                .forEach(this::saveOnly);
+                                .forEach(this::save);
                     }
                 });
     }
 
-    private void saveOnly(Field field) {
+    private void save(Field field) {
         // Comment(s)
         writer.writeComments(field, false);
 
