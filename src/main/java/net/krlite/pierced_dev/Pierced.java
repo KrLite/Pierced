@@ -157,7 +157,7 @@ public abstract class Pierced extends WithFile {
                     }
                 });
 
-        // Inline Comment
+        // Inline comment
         writer.writeInlineComment(field);
     }
 
