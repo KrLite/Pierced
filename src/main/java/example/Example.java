@@ -6,15 +6,30 @@ import net.krlite.pierced_dev.annotation.InlineComment;
 import net.krlite.pierced_dev.annotation.Table;
 import net.krlite.pierced_dev.annotation.TableComment;
 import net.krlite.pierced_dev.ast.io.Reader;
+import net.krlite.pierced_dev.ast.regex.recursive.Array;
+import net.krlite.pierced_dev.ast.util.Util;
 import net.krlite.pierced_dev.serialization.PrimitiveSerializers;
 
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Example {
     public static void main(String[] args) {
-        /*
+        //util();
+        //read();
+
+        Config config = new Config();
+
+        load(config);
+        //save(config);
+    }
+
+    public static void util() {
+        System.out.println();
         System.out.println("=== UTIL ===");
+
         System.out.println("raw: " + "\\u0041,\\U0001F600");
         System.out.println("unescaped: " + Util.unescape("\\u0041,\\U0001F600"));
 
@@ -22,10 +37,12 @@ public class Example {
 
         System.out.println("raw: " + "\\,\",\b,\f,\n,\r,\t,\\u0000,\\U00000000");
         System.out.println("escaped: " + Util.escape("\\,\",\b,\f,\n,\r,\t,\\u0000,\\U00000000", true));
+    }
 
-         */
-
+    public static void read() {
+        System.out.println();
         System.out.println("=== READ ===");
+
         Reader reader = new Reader(new File("src/main/java/example/config/example.toml"));
 
         reader.get(
@@ -58,31 +75,34 @@ public class Example {
                 PrimitiveSerializers.getSerializer(Double.class).get()
         ).ifPresent(System.out::println);
 
-        /*
         reader.get(
                 "a.\"23.k\".1.3",
-                PrimitiveSerializers.getPrimitiveSerializer(boolean.class).get()
+                PrimitiveSerializers.getSerializer(boolean.class).get()
         ).ifPresent(System.out::println);
 
         reader.get(
                 "b.d",
-                PrimitiveSerializers.getPrimitiveSerializer(double.class).get()
+                PrimitiveSerializers.getSerializer(double.class).get()
         ).ifPresent(System.out::println);
 
         reader.get(
                 "c",
-                PrimitiveSerializers.getPrimitiveSerializer(Color.class).get()
+                PrimitiveSerializers.getSerializer(Color.class).get()
         ).ifPresent(System.out::println);
+    }
 
-         */
-
-        Config config = new Config();
-
+    public static void load(Config config) {
+        System.out.println();
         System.out.println("=== LOAD ===");
+
         config.load();
         System.out.println(config.c);
+    }
 
+    public static void save(Config config) {
+        System.out.println();
         System.out.println("=== SAVE ===");
+
         config.save();
     }
 
@@ -103,5 +123,7 @@ public class Example {
 
         @Comment("DEF")
         public double aaa = 2.3;
+
+        public List<Object> d = new ArrayList<>();
     }
 }

@@ -4,11 +4,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ABNF {
-	// Region	ABNF
 	public static final Pattern DIGIT = Pattern.compile("[0-9]");
 	public static final Pattern HEXDIG = join(DIGIT, Pattern.compile("[a-fA-F]"));
 	public static final Pattern ALPHA = Pattern.compile("[a-zA-Z]");
-	// End
 
 
 

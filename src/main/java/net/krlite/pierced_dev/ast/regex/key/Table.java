@@ -16,6 +16,8 @@ public class Table extends ABNF {
 	);
 
 	public static final Pattern STD_TABLE = chain(
+			Pattern.compile("^"),
+			repeats(Whitespace.WS),
 			STD_TABLE_OPEN,
 			Key.KEY,
 			STD_TABLE_CLOSE

@@ -1,5 +1,6 @@
 package net.krlite.pierced_dev.ast.util;
 
+import net.krlite.pierced_dev.ast.regex.Comment;
 import net.krlite.pierced_dev.ast.regex.NewLine;
 import net.krlite.pierced_dev.ast.regex.key.Key;
 import net.krlite.pierced_dev.ast.regex.key.Table;
