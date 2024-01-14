@@ -139,7 +139,7 @@ public class Example {
 
         @InlineComment("INLINE")
         @Table("a . \"b\"")
-        public Color c = new Color(0x172D8F);
+        static Color c = new Color(0x172D8F);
 
         @Comment("DEF")
         public double aaa = 2.3;

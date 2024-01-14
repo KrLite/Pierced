@@ -117,6 +117,8 @@ public abstract class Pierced extends WithFile {
     }
 
     private void load(Field field) {
+        field.setAccessible(true);
+
         getWrapper(field, field.getType())
                 .flatMap(wrapper -> reader.get(getKey(field), wrapper))
                 .ifPresent(value -> {
@@ -160,11 +162,12 @@ public abstract class Pierced extends WithFile {
     }
 
     private void save(Field field) {
+        field.setAccessible(true);
+
         // Comment(s)
         writer.writeComments(field, false);
 
         // Key value pair
-        field.setAccessible(true);
         getWrapper(field, field.getType())
                 .ifPresent(wrapper -> {
                     try {
@@ -188,6 +191,7 @@ public abstract class Pierced extends WithFile {
 
     private boolean hasValue(Field field) {
         try {
+            field.setAccessible(true);
             return field.get(this) != null;
         } catch (IllegalAccessException e) {
             addException(ExceptionHandler.handleFieldIllegalAccessException(e, field.getName()));

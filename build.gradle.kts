@@ -14,7 +14,7 @@ base {
 sourceSets {
     main {
         java {
-            exclude("example/**")
+            // exclude("example/**")
         }
     }
 }
