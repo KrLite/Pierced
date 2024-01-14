@@ -235,7 +235,6 @@ public class Reader extends WithFile {
 							if (primitiveMatched) {
 								// Primitive found
 								String primitiveValue = primitiveMatcher.group();
-								System.out.println(primitiveValue);
 
 								return wrapper.serializer().deserialize(wrapper.sClass(), primitiveValue);
 							}
