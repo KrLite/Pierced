@@ -15,7 +15,6 @@ sourceSets {
     main {
         java {
             // exclude("example/**")
-            // exclude("net/krlite/pierced/**")
         }
     }
 }

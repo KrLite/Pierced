@@ -4,16 +4,12 @@
 
 # DEF
 aaa = 500.0
-
-d = [1, 2, [2] , """
-w
-""",
- 3, # Comment
- # Comment
- 4 , ]
+s = "abc"
+test = "B"
+testLocalized = "aaa"
 
 # This is a table comment
 #  
 # This is another table comment
-  [a."b"]
+[a."b"]
 c = 0xFF172D8F # INLINE
