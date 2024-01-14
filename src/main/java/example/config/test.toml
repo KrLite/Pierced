@@ -3,13 +3,14 @@
 # C
 
 # DEF
-aaa = 5.0
+aaa = 5.123
+a = 3.0
 s = "ab@#c"
 test = "C"
-testLocalized = "aaa"
+testLocalized = "bbb"
 
 [c.d]
-b1 = true
+b1 = false
 b2 = true
 
 # This is a table comment

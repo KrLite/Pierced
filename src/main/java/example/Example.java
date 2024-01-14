@@ -94,6 +94,7 @@ public class Example {
         System.out.println("=== LOAD ===");
 
         config.load();
+        System.out.println(Config.a);
         System.out.println(Config.c);
         System.out.println(config.s);
         System.out.println(config.test);
@@ -151,6 +152,8 @@ public class Example {
 
         @Comment("DEF")
         public double aaa = 2.3;
+
+        static double a = 2.0;
 
         public String s = "abc";
 
