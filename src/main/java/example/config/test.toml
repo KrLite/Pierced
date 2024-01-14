@@ -3,8 +3,8 @@
 # C
 
 # DEF
-aaa = 500.0
-s = "abc"
+aaa = 5.0
+s = "ab@#c"
 test = "C"
 testLocalized = "aaa"
 
@@ -16,4 +16,4 @@ b2 = true
 #  
 # This is another table comment
 [a."b"]
-c = 0xFF172D8F # INLINE
+c = 0x00FFFDDF # INLINE

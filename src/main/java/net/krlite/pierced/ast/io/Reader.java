@@ -205,13 +205,9 @@ public class Reader extends WithFile {
 
 					if (stdTableMatcherFound) {
 						String stdTable = stdTableMatcher.group();
-						System.out.println(stdTable);
 						stdTable = Util.flatten(Util.unescape(Util.normalizeStdTable(stdTable)), true);
 
-						System.out.println(stdTable + " :: " + rawKey);
 						rawKey = rawKey.replaceFirst(Util.escapeForRegex(stdTable + "."), "");
-						System.out.println(stdTable + " :: " + rawKey);
-						System.out.println();
 					}
 				}
 
@@ -233,13 +229,12 @@ public class Reader extends WithFile {
 							String keyvalSep = matcher.group();
 							String value = keyValuePair.substring(matcher.end());
 
-							Matcher primitiveMatcher = Primitive.PRIMITIVE.matcher(value);
-							boolean primitiveMatched = primitiveMatcher.matches();
+							Matcher primitiveMatcher = Primitive.PRIMITIVE_WITH_STARTER.matcher(value);
+							boolean primitiveMatched = primitiveMatcher.find();
 
 							if (primitiveMatched) {
 								// Primitive found
 								String primitiveValue = primitiveMatcher.group();
-								System.out.println(primitiveValue);
 
 								return wrapper.serializer().deserialize(wrapper.sClass(), primitiveValue);
 							}

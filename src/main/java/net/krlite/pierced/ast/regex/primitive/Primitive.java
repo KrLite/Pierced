@@ -18,4 +18,8 @@ public class Primitive extends ABNF {
             Float.FLOAT,
             STRING
     );
+    public static final Pattern PRIMITIVE_WITH_STARTER = chain(
+            Pattern.compile("^"),
+            PRIMITIVE
+    );
 }
