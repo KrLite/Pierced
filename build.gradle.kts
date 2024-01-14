@@ -11,14 +11,6 @@ base {
     archivesName.set(rootProject.property("archives_base_name").toString())
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("com.moandjiezana.toml:toml4j:${rootProject.property("toml4j_version")}")
-}
-
 sourceSets {
     main {
         java {
