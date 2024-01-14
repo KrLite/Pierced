@@ -149,6 +149,13 @@ public class Util {
         return raw;
     }
 
+    public static String escapeForRegex(String raw) {
+        raw = raw.replaceAll("\\.", "\\\\.");
+        raw = raw.replaceAll("\\+", "\\\\+");
+
+        return raw;
+    }
+
     public static String formatLine(String rawKey, String rawValue, Class<?> clazz) {
         rawKey = formatKey(flatten(normalizeKey(rawKey), false));
 

@@ -11,7 +11,6 @@ import net.krlite.pierced.ast.regex.primitive.Primitive;
 import net.krlite.pierced.ast.regex.recursive.Array;
 import net.krlite.pierced.ast.regex.recursive.InlineTable;
 import net.krlite.pierced.ast.util.Util;
-import net.krlite.pierced.serialization.base.Deserializable;
 import net.krlite.pierced.serialization.base.Serializer;
 
 import java.io.*;
@@ -206,9 +205,13 @@ public class Reader extends WithFile {
 
 					if (stdTableMatcherFound) {
 						String stdTable = stdTableMatcher.group();
+						System.out.println(stdTable);
 						stdTable = Util.flatten(Util.unescape(Util.normalizeStdTable(stdTable)), true);
 
-						rawKey = rawKey.replaceFirst("^" + stdTable + ".", "");
+						System.out.println(stdTable + " :: " + rawKey);
+						rawKey = rawKey.replaceFirst(Util.escapeForRegex(stdTable + "."), "");
+						System.out.println(stdTable + " :: " + rawKey);
+						System.out.println();
 					}
 				}
 
@@ -236,6 +239,7 @@ public class Reader extends WithFile {
 							if (primitiveMatched) {
 								// Primitive found
 								String primitiveValue = primitiveMatcher.group();
+								System.out.println(primitiveValue);
 
 								return wrapper.serializer().deserialize(wrapper.sClass(), primitiveValue);
 							}

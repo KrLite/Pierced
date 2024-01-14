@@ -10,10 +10,10 @@ import java.util.regex.Matcher;
 public class RecursiveSerializers {
     public static final Serializer<List<?>> LIST = Serializer.build((c, s) -> {
         Matcher matcher = Array.ARRAY_LAYER.matcher(s);
-        System.out.println(s);
+        //System.out.println(s);
         while (matcher.matches()) {
             String layer = matcher.group("value");
-            System.out.println(layer);
+            //System.out.println(layer);
         }
         return Optional.empty();
     });

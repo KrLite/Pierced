@@ -5,8 +5,12 @@
 # DEF
 aaa = 500.0
 s = "abc"
-test = "B"
+test = "C"
 testLocalized = "aaa"
+
+[c.d]
+b1 = true
+b2 = true
 
 # This is a table comment
 #  

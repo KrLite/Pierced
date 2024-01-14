@@ -94,10 +94,12 @@ public class Example {
         System.out.println("=== LOAD ===");
 
         config.load();
-        System.out.println(config.c);
+        System.out.println(Config.c);
         System.out.println(config.s);
         System.out.println(config.test);
         System.out.println(config.testLocalized);
+        System.out.println(Config.b1);
+        System.out.println(Config.b2);
     }
 
     public static void save(Config config) {
@@ -140,6 +142,12 @@ public class Example {
         @InlineComment("INLINE")
         @Table("a . \"b\"")
         static Color c = new Color(0x172D8F);
+
+        @Table("c.d")
+        static boolean b1 = false;
+
+        @Table("c.d")
+        static Boolean b2 = false;
 
         @Comment("DEF")
         public double aaa = 2.3;
